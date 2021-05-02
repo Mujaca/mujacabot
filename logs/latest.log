@@ -1,0 +1,5 @@
+[INFO 03:16:09] Initialized Log File
+[INFO 03:16:09] Errorhandling loaded!
+[INFO 03:16:09] Config loaded
+[INFO 03:16:09] Bot started as MujacaBot#0882!
+[ERROR 03:16:12] TypeError: Cannot read property 'category' of undefined
