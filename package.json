@@ -1,0 +1,32 @@
+{
+  "name": "mujaca-bot",
+  "version": "3.0.0",
+  "description": "The third try for my Discord Bot. Here goes nothing!",
+  "main": "dist/index.js",
+  "scripts": {
+    "compile": "tsc",
+    "start": "npm run compile && node dist/index.js",
+    "dev": "tsc -w & nodemon dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mujaca/mujacabot.git"
+  },
+  "keywords": [
+    "Discord",
+    "DiscordJS"
+  ],
+  "author": "Mujaca#2202",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mujaca/mujacabot/issues"
+  },
+  "homepage": "https://github.com/Mujaca/mujacabot#readme",
+  "dependencies": {
+    "discord.js": "^14.9.0",
+    "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
