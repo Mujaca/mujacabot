@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
-        "module": "amd",
+        "module": "CommonJS",
+        "target": "ESNext",
+        "moduleResolution": "node",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
