@@ -8,6 +8,10 @@ import { connectDatabase } from './manager/databaseManager';
 
 initialiseConsole();
 connectDatabase();
-
 botManager.connectBot();
-commandManager.registerCommand("ping", new command("ping", "Ping Command", (interaction: WithIntrinsicProps<APIInteraction>) => {interaction.api.interactions.reply(interaction.data.id, interaction.data.token, {content: "Pong!"})}));
+
+//Register Modules
+//TODO
+
+//Register Commands outside of modules
+commandManager.registerCommand("ping", new command("ping", "Ping Command", (interaction: WithIntrinsicProps<APIInteraction>) => {interaction.api.interactions.reply(interaction.data.id, interaction.data.token, {content: "This is a Test Command to see if the Bot is still up!" })}));
