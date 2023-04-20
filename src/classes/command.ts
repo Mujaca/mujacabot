@@ -8,7 +8,7 @@ export class command{
     constructor(name:string, description:string, callback:Function){
         this.callBack = callback;
 
-        this.commandBuilder.setName(name);
+        this.commandBuilder.setName(name.toLocaleLowerCase());
         this.commandBuilder.setDescription(description);
     }
 
