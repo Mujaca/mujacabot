@@ -1,19 +1,18 @@
+import { SlashCommandBuilder } from "discord.js";
+
 export class command{
     
-    private name: string;
-    private description: string;
     public callBack: Function;
+    public commandBuilder: SlashCommandBuilder = new SlashCommandBuilder();
     
     constructor(name:string, description:string, callback:Function){
-        this.name = name;
-        this.description = description;
         this.callBack = callback;
+
+        this.commandBuilder.setName(name);
+        this.commandBuilder.setDescription(description);
     }
 
     public getDiscordCommand(){
-        return {
-            name: this.name,
-            description: this.description
-        }
+        return this.commandBuilder;
     }
 }
