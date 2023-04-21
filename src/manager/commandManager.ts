@@ -19,6 +19,9 @@ async function registerCommand(commandName:string, commandClass:command){
     await botManager.rest.put(Routes.applicationGuildCommands("347650737741758465", "469780030483070977"), {
         body: bodyArray
     });
+    await botManager.rest.put(Routes.applicationGuildCommands("347650737741758465", "1041336029396877362"), {
+        body: bodyArray
+    });
     console.error("Registered command: " + commandName + "")
 }
 
