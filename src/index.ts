@@ -16,4 +16,3 @@ botManager.connectBot();
 moduleManager.registerModule("LewdOrNsFW", new LewdOrNsFW());
 
 //Register Commands outside of modules
-commandManager.registerCommand("ping", new command("ping", "Ping Command", (interaction: WithIntrinsicProps<APIInteraction>) => {interaction.api.interactions.reply(interaction.data.id, interaction.data.token, {content: "This is a Test Command to see if the Bot is still up!" })}));
