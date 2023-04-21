@@ -1,4 +1,4 @@
-export class module {
+export class Module {
     public name: string;
     
     constructor(name: string) {
