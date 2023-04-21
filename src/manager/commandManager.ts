@@ -5,10 +5,9 @@ import { SlashCommandBuilder } from "discord.js";
 
 const map:Map<string, command> = new Map();
 
-botManager.client.on(GatewayDispatchEvents.InteractionCreate, async (interaction) => {
-    if(interaction.data.type != InteractionType.ApplicationCommand) return;
-    // @ts-ignore
-    const command = map.get(interaction.data.data?.name);
+botManager.client.on('interactionCreate', async (interaction) => {
+    if(!interaction.isCommand()) return;
+    const command = map.get(interaction.commandName);
     command?.callBack(interaction);
 })
 

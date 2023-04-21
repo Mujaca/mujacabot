@@ -1,28 +1,23 @@
-import { GatewayDispatchEvents, GatewayIntentBits, InteractionType, MessageFlags, Client } from '@discordjs/core';
+import { GatewayDispatchEvents, GatewayIntentBits, InteractionType, MessageFlags, Client } from 'discord.js';
 import { REST } from '@discordjs/rest';
-import { WebSocketManager } from '@discordjs/ws';
 import * as dotenv from "dotenv";
 dotenv.config();
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
-const ws = new WebSocketManager({
-    intents: GatewayIntentBits.GuildMessages | GatewayIntentBits.GuildMessageReactions,
-    token: process.env.TOKEN,
-    rest
-})
 
-const client = new Client({ rest, ws });
+const client = new Client({
+    intents: [GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions]
+});
 
 function connectBot() {
-    client.once(GatewayDispatchEvents.Ready, () => {
+    client.login(process.env.TOKEN);
+    client.once('ready', () => {
         console.log('Client ready!');
     });
-    ws.connect();
 }
 
 export default {
     client,
     rest,
-    ws,
     connectBot
 }
