@@ -1,12 +1,17 @@
 import { GatewayDispatchEvents, InteractionType, Routes } from "@discordjs/core";
 import botManager from "./botManager";
 import { interaction } from "../classes/interaction";
+import { ButtonInteraction } from "discord.js";
 
 const map:Map<string, interaction> = new Map();
 
 botManager.client.on("interactionCreate", async (interaction) => {
+    let interactionID;
+
     if(interaction.isCommand()) return;
-    const command = map.get(interaction.id);
+    if(interaction.isButton()) interactionID = (<ButtonInteraction> interaction).customId;
+
+    const command = map.get(interactionID);
     command?.callBack(interaction);
 })
 
