@@ -16,3 +16,6 @@ botManager.connectBot();
 moduleManager.registerModule("LewdOrNsFW", new LewdOrNsFW());
 
 //Register Commands outside of modules
+
+// Submit Commands to Discord
+commandManager.submitCommands();
