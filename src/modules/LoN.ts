@@ -33,10 +33,18 @@ export class LewdOrNsFW extends Module {
         LoNForcePicture.commandBuilder.setNSFW(true);
         LoNForcePicture.commandBuilder.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels);
 
+        const LoNStatistics = new command("lon-statistics", "Zeigt die Statistiken des Lewd oder NSFW Spiels an", this.getStatistics);
+        LoNStatistics.commandBuilder.setNSFW(true);
+
+        const ownLoNStatistics = new command("lon-own-statistics", "Zeigt deine Statistiken des Lewd oder NSFW Spiels an", this.getOwnStatistics);
+        ownLoNStatistics.commandBuilder.setNSFW(true);
+
         commandManager.registerCommand("lon", LoNCommand)
         commandManager.registerCommand("lon-update", LoNUpdateVoteCount)
         commandManager.registerCommand("lon-add", LoNAddPicture)
         commandManager.registerCommand("lon-force", LoNForcePicture)
+        commandManager.registerCommand("lon-statistics", LoNStatistics)
+        commandManager.registerCommand("lon-own-statistics", ownLoNStatistics)
 
         interactionManager.registerInteraction("lon-save", new interaction("lon-save", this.handleLoNInteraction));
         interactionManager.registerInteraction("lon-lewd", new interaction("lon-lewd", this.handleLoNInteraction));
@@ -84,6 +92,69 @@ export class LewdOrNsFW extends Module {
         // Update the Vote count
         await collection.updateOne({channelID: interaction.channelId, messageID: data.messageID}, {$set: {neededVotes: votes}});
         return interaction.reply({content: "Die benötigten Votes wurden erfolgreich aktualisiert!", ephemeral: true});
+    }
+
+    async getStatistics(interaction: ChatInputCommandInteraction) {
+        const collection = databaseManager.db.collection<LoNData>("LoN-data");
+        const data = await collection.find({channelID: interaction.channelId}).toArray();
+        const embed = new EmbedBuilder();
+
+        const summary = {
+            save: 0,
+            lewd: 0,
+            nsfw: 0
+        }
+
+        for(let entry of data.filter((entry) => !entry.deleted)) {
+            const save = entry.votes.filter((interaction) => interaction.vote === "save").length;
+            const lewd = entry.votes.filter((interaction) => interaction.vote === "lewd").length;
+            const nsfw = entry.votes.filter((interaction) => interaction.vote === "nsfw").length;
+
+            if(save > lewd && save >= nsfw) summary.save++;
+            if(lewd > save && lewd >= nsfw) summary.lewd++;
+            if(nsfw > save && nsfw >= lewd) summary.nsfw++;
+        }
+
+        embed.setTitle("Statistiken");
+        embed.setDescription(`Insgesamt wurden ${data.length} Bilder gesendet!`);
+        embed.addFields([
+            {name: "Normale Bilder", value: `${summary.save} (${(summary.save / data.length * 100).toFixed(2)}%)`, inline: true},
+            {name: "Lewd Bilder", value: `${summary.lewd} (${(summary.lewd / data.length * 100).toFixed(2)}%)`, inline: true},
+            {name: "NSFW Bilder", value: `${summary.nsfw} (${(summary.nsfw / data.length * 100).toFixed(2)}%)`, inline: true},
+            {name: "Gelöschte Bilder", value: `${data.filter((entry) => entry.deleted).length} (${(data.filter((entry) => entry.deleted).length / data.length * 100).toFixed(2)}%)`, inline: true}
+        ]);
+        embed.setColor("DarkAqua");
+
+        interaction.reply({embeds: [embed]});
+    }
+
+    async getOwnStatistics(interaction: ChatInputCommandInteraction) {
+        const collection = databaseManager.db.collection<LoNData>("LoN-data");
+        const userID = interaction.user.id;
+        const embed = new EmbedBuilder();
+        const data = (await collection.find({channelID: interaction.channelId, "votes.userID": userID}).toArray()).filter((entry) => !entry.deleted);
+        const summary = {
+            save: 0,
+            lewd: 0,
+            nsfw: 0
+        }
+        type summaryType = keyof typeof summary;
+
+        for(let entry of data) {
+            const vote:summaryType = entry.votes.filter(vote => vote.userID === userID)[0].vote as summaryType;
+            summary[vote]++;
+        }
+
+        embed.setTitle("Statistiken");
+        embed.setDescription(`Insgesamt hast du an ${data.length} Abstimmung teilgenommen!`);
+        embed.addFields([
+            {name: "\"Save\" Votes", value: `${summary.save} (${(summary.save / data.length * 100).toFixed(2)}%)`, inline: true},
+            {name: "\"Lewd\" Votes", value: `${summary.lewd} (${(summary.lewd / data.length * 100).toFixed(2)}%)`, inline: true},
+            {name: "\"NSFW\" Votes", value: `${summary.nsfw} (${(summary.nsfw / data.length * 100).toFixed(2)}%)`, inline: true},
+        ]);
+        embed.setColor("DarkAqua");
+
+        interaction.reply({embeds: [embed], ephemeral: true});
     }
 
     async addLoNPicture(interaction: ChatInputCommandInteraction) {
