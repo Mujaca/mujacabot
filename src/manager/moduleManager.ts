@@ -1,7 +1,8 @@
 import { Module } from "../classes/module";
 
-function registerModule(name: string, module: Module) {
+//TODO implement module manager
 
+function registerModule(name: string, module: Module) {
 }
 
 export default {
