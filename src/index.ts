@@ -4,6 +4,7 @@ import commandManager from './manager/commandManager';
 import moduleManager from './manager/moduleManager';
 import { connectDatabase } from './manager/databaseManager';
 import { LewdOrNsFW } from './modules/LoN';
+import { profilePictures } from './modules/profilePictures';
 
 initialiseConsole();
 connectDatabase();
@@ -11,6 +12,7 @@ botManager.connectBot();
 
 //Register Modules
 moduleManager.registerModule("LewdOrNsFW", new LewdOrNsFW());
+moduleManager.registerModule("profilePictures", new profilePictures());
 
 //Register Commands outside of modules
 
