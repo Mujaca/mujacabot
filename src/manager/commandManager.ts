@@ -25,6 +25,8 @@ async function submitCommands() {
     await botManager.rest.put(Routes.applicationGuildCommands("347650737741758465", "1041336029396877362"), {
         body: bodyArray
     });
+
+    console.error("Submitted all Commands!")
 }
 
 export default {
