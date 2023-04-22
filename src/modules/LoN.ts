@@ -197,7 +197,7 @@ export class LewdOrNsFW extends Module {
             messageContent.embeds[0].addFields([{name: "Tags", value: data.picture.tags}])
             setTimeout(() => {
                 sendNextPicture(data.channelID);                
-            }, 3000);
+            }, 1500);
         }
         
         const channel = await botManager.client.channels.fetch(data.channelID) as TextChannel;
@@ -226,7 +226,7 @@ async function getPicture(channelID: string):Promise<LoNImage> {
         }
     }
 
-    const response = await axios.get("https://yande.re/post.json?limit=100&page=" + (Math.random() * 100))
+    const response = await axios.get("https://yande.re/post.json?limit=100&page=" + (Math.floor(Math.random() * 100)))
     const data:LoNImage[] = response.data.filter((item: any) => (item.rating == "q" || item.rating == "e") && !item.has_children);
     const RNG = Math.floor(Math.random() * data.length);
 
