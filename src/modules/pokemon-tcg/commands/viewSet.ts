@@ -7,7 +7,7 @@ import botManager from "../../../manager/botManager";
 export async function TCGviewSet(interaction: ChatInputCommandInteraction) {
     const setName = interaction.options.getString("set");
     if(!setName) return interaction.reply({content: "Du musst ein Set angeben!", ephemeral: true});
-    const set = await PokemonTCG.findSetsByQueries({q: `name:${setName}`});
+    const set = await PokemonTCG.findSetsByQueries({q: `name:"${setName}"`});
     if(!set || set.length == 0) return interaction.reply({content: "Dieses Set gibt es nicht!", ephemeral: true});
     const deferReply = await interaction.deferReply();
     const cards = await PokemonTCG.findCardsByQueries({q: `set.id:${set[0].id}`});

@@ -10,7 +10,7 @@ import playerDataManager from "../manager/playerDataManager";
 export async function TCGopenPack(interaction: ChatInputCommandInteraction) {
     const setName = interaction.options.getString("set");
     if(!setName) return interaction.reply({content: "Du musst ein Set angeben!", ephemeral: true});
-    const set = await PokemonTCG.findSetsByQueries({q: `name:${setName}`});
+    const set = await PokemonTCG.findSetsByQueries({q: `name:"${setName}"`});
     if(!set || set.length == 0) return interaction.reply({content: "Dieses Set gibt es nicht!", ephemeral: true});
 
     const player = playerDataManager.getPlayer(interaction.user.id);
