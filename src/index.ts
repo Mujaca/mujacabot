@@ -6,6 +6,7 @@ import { connectDatabase } from './manager/databaseManager';
 import { LewdOrNsFW } from './modules/LoN';
 import { profilePictures } from './modules/profilePictures';
 import { TCG } from './modules/pokemon-tcg';
+import { StarRail } from './modules/StarRail';
 
 initialiseConsole();
 connectDatabase();
@@ -15,6 +16,7 @@ botManager.connectBot();
 moduleManager.registerModule("LewdOrNsFW", new LewdOrNsFW());
 moduleManager.registerModule("profilePictures", new profilePictures());
 moduleManager.registerModule("TCG", new TCG());
+moduleManager.registerModule("StarRail", new StarRail());
 
 //Register Commands outside of modules
 
