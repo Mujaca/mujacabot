@@ -16,7 +16,7 @@ botManager.connectBot();
 moduleManager.registerModule("LewdOrNsFW", new LewdOrNsFW());
 moduleManager.registerModule("profilePictures", new profilePictures());
 moduleManager.registerModule("TCG", new TCG());
-moduleManager.registerModule("StarRail", new StarRail());
+//moduleManager.registerModule("StarRail", new StarRail());
 
 //Register Commands outside of modules
 
