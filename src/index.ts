@@ -13,6 +13,7 @@ import { command } from './classes/command';
 import { remindMe, remindMeDelete, remindMeJoin } from './commands/remindme';
 import { interaction } from './classes/interaction';
 import interactionManager from './manager/interactionManager';
+import { PaP } from './modules/pen-and-paper';
 
 initialiseConsole();
 connectDatabase();
@@ -22,6 +23,7 @@ botManager.connectBot();
 moduleManager.registerModule("LewdOrNsFW", new LewdOrNsFW());
 moduleManager.registerModule("profilePictures", new profilePictures());
 moduleManager.registerModule("TCG", new TCG());
+moduleManager.registerModule('PaP', new PaP());
 //moduleManager.registerModule("StarRail", new StarRail());
 
 //Register Commands outside of modules
