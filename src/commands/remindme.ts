@@ -22,8 +22,7 @@ export async function remindMe(interaction: ChatInputCommandInteraction) {
     const time = interaction.options.getString("time").toLowerCase();
     const message = interaction.options.getString("message");
     const finalDate = new Date(getUnixTime(getZonedTime(new Date(), timezone)));
-    
-
+    console.log(getUnixTime(getZonedTime(new Date(), timezone)));
 
     if (time.includes('.')) {
         const index = time.split(' ').findIndex((value) => value.includes('.'));
@@ -75,6 +74,7 @@ export async function remindMe(interaction: ChatInputCommandInteraction) {
     }
 
     const currentDate = new Date(getUnixTime(getZonedTime(new Date(), timezone)));
+    console.log(currentDate.getTime());
     if (finalDate.getTime() < currentDate.getTime()) return interaction.reply({ephemeral:true,content:"Bitte gib eine Zeit in der Zukunft an!"});
 
     const user = interaction.user;
