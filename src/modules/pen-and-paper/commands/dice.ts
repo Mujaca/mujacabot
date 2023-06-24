@@ -17,7 +17,7 @@ export async function PaProllDice(interaction: ChatInputCommandInteraction) {
     const silent = interaction.options.getBoolean("silent") ?? false;
     const dice = interaction.options.getInteger("dice") ?? 10;
 
-    const result = Math.floor(Math.random() * dice);
+    const result = Math.floor(Math.random() * dice) + 1;
 
     const interactionMessage = interaction.reply({content:`Rolling ...`, ephemeral:silent});
     for(let i = 0; i < 5; i++) {
@@ -28,7 +28,7 @@ export async function PaProllDice(interaction: ChatInputCommandInteraction) {
 
     let message;
     switch(result) {
-        case 0:
+        case dice:
             message = "Kritischer Erfolg!";
             break;
         case 1:
