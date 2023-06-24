@@ -1,6 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder, TextChannel } from "discord.js";
+import { getZonedTime, findTimeZone, getUnixTime } from "timezone-support";
 import databaseManager from "../manager/databaseManager";
 import botManager from "../manager/botManager";
+
 
 //const letterRegEx = /^[A-Za-z]+$/;
 //const numberRegEx = /^[0-9]+$/;
@@ -13,11 +15,14 @@ const shortTime = {
     "w": 604800000,
     "y": 31536000000
 }
+const timezone = findTimeZone("Europe/Berlin");
+
 
 export async function remindMe(interaction: ChatInputCommandInteraction) {
     const time = interaction.options.getString("time").toLowerCase();
     const message = interaction.options.getString("message");
-    const finalDate = new Date();
+    const finalDate = new Date(getUnixTime(getZonedTime(new Date(), timezone)));
+    
 
 
     if (time.includes('.')) {
@@ -69,7 +74,7 @@ export async function remindMe(interaction: ChatInputCommandInteraction) {
         finalDate.setTime(finalDate.getTime() + timeInMiliseconds);
     }
 
-    const currentDate = new Date();
+    const currentDate = new Date(getUnixTime(getZonedTime(new Date(), timezone)));
     if (finalDate.getTime() < currentDate.getTime()) return interaction.reply({ephemeral:true,content:"Bitte gib eine Zeit in der Zukunft an!"});
 
     const user = interaction.user;
@@ -158,7 +163,7 @@ async function onRestart(){
     const collection = databaseManager.db.collection("remindme");
     const reminders = await collection.find().toArray();
     reminders.forEach(async (reminder) => {
-        const currentDate = new Date();
+        const currentDate = new Date(getUnixTime(getZonedTime(new Date(), timezone)));
         const finalDate = new Date(reminder.date);
         if (finalDate.getTime() < currentDate.getTime()) {
             const channel = await botManager.client.channels.fetch(reminder.channelId);
