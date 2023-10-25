@@ -7,7 +7,6 @@ import { connectDatabase } from './manager/databaseManager';
 import { LewdOrNsFW } from './modules/LoN';
 import { profilePictures } from './modules/profilePictures';
 import { TCG } from './modules/pokemon-tcg';
-import { StarRail } from './modules/StarRail';
 // Command imports
 import { command } from './classes/command';
 import { remindMe, remindMeDelete, remindMeJoin } from './commands/remindme';
