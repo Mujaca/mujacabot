@@ -18,9 +18,9 @@ model LoNChannel {
 
 model LoNData {
   id          Int        @id @default(autoincrement())
-  channelID   String     @unique
   messageID   String     @unique
   channel     LoNChannel @relation(fields: [channelID], references: [channelID])
+  channelID   String
   neededVotes Int
   votes       LoNVotes[]
   picture     LoNImage   @relation(fields: [pictureID], references: [id])
@@ -29,11 +29,10 @@ model LoNData {
 }
 
 model LoNVotes {
-  id     Int     @id @default(autoincrement())
   userID String
   vote   String
   data   LoNData @relation(fields: [dataID], references: [id])
-  dataID Int
+  dataID Int @unique
 }
 
 model LoNImage {

@@ -5,7 +5,7 @@ import interactionManager from "../manager/interactionManager";
 import botManager from "../manager/botManager";
 import { ChatInputCommandInteraction, TextChannel, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ActionRow, ButtonStyle, Interaction, ButtonInteraction, messageLink } from 'discord.js';
 import { PermissionFlagsBits } from '@discordjs/core';
-import databaseManager from '../manager/databaseManager';
+import databaseManager from '../manager/dbManager';
 import { interaction } from "../classes/interaction";
 import axios from "axios";
 import { LoNData, LoNImage, LoNPicture } from "../@types/LoN";
@@ -51,52 +51,48 @@ export class LewdOrNsFW extends Module {
         interactionManager.registerInteraction("lon-nsfw", new interaction("lon-nsfw", this.handleLoNInteraction));
         interactionManager.registerInteraction("lon-delete", new interaction("lon-delete", this.deleteLoNPicture));
 
-        databaseManager.db.collection("LoN").find().toArray().then((data) => {
+        databaseManager.db.loNChannel.findMany().then((data) => {
             CHANNELS = data.map((data) => data.channelID);
         });
     }
 
     async addLoNChannel(interaction: ChatInputCommandInteraction) {
-        const collection = databaseManager.db.collection("LoN");
-        const data = await collection.findOne({channelID: interaction.channelId});
-        if(data) {
-            collection.deleteOne({channelID: interaction.channelId});
+        const channel = databaseManager.db.loNChannel.findUnique({where: {channelID: interaction.channelId}});
+        if(channel) {
+            databaseManager.db.loNChannel.delete({where: {channelID: interaction.channelId}});
             CHANNELS = CHANNELS.filter((channel) => channel !== interaction.channelId);
             interaction.reply({content: "Der Channel wurde erfolgreich entfernt!", ephemeral: true});
             return;
         }
 
         CHANNELS.push(interaction.channelId);
-        databaseManager.db.collection("LoN").insertOne({channelID: interaction.channelId});
+        databaseManager.db.loNChannel.create({data: {channelID: interaction.channelId}});
         interaction.reply({content: "Der Channel wurde erfolgreich hinzugefügt!", ephemeral: true});
         sendNextPicture(interaction.channelId);
     }
 
     async forceLoNPicture(interaction: ChatInputCommandInteraction) {
-        const collection = databaseManager.db.collection<LoNData>("LoN-data");
-        const data = await collection.findOne({channelID: interaction.channelId}, {sort: {$natural: -1}});
+        const data = await databaseManager.db.loNData.findMany({where: {channelID: interaction.channelId}, orderBy: {messageID: "desc"}});
         if(!data) return interaction.reply({content: "Es wurde noch kein Bild in diesem Channel hinzugefügt!", ephemeral: true});
         
-        await collection.updateOne({channelID: interaction.channelId, messageID: data.messageID}, {$set: {deleted: true}});
+        await databaseManager.db.loNData.updateMany({where: {channelID: interaction.channelId, messageID: data[0].messageID}, data: {deleted: true}});
         sendNextPicture(interaction.channelId);
         return interaction.reply({content: "Das nächste Bild wurde erfolgreich gesendet!", ephemeral: true});
     }
 
     async updateVoteCount(interaction: ChatInputCommandInteraction) {
-        const collection = databaseManager.db.collection<LoNData>("LoN-data");
         const votes = interaction.options.getInteger("votes");
 
-        const data = await collection.findOne({channelID: interaction.channelId}, {sort: {$natural: -1}});
+        const data = await databaseManager.db.loNData.findMany({where: {channelID: interaction.channelId}, orderBy: {messageID: "desc"}});
         if(!data) return interaction.reply({content: "Es wurde noch kein Bild in diesem Channel hinzugefügt!", ephemeral: true});
         
         // Update the Vote count
-        await collection.updateOne({channelID: interaction.channelId, messageID: data.messageID}, {$set: {neededVotes: votes}});
+        await databaseManager.db.loNData.updateMany({where: {channelID: interaction.channelId, messageID: data[0].messageID}, data: {neededVotes: votes}});
         return interaction.reply({content: "Die benötigten Votes wurden erfolgreich aktualisiert!", ephemeral: true});
     }
 
     async getStatistics(interaction: ChatInputCommandInteraction) {
-        const collection = databaseManager.db.collection<LoNData>("LoN-data");
-        const data = await collection.find({channelID: interaction.channelId}).toArray();
+        const data = await databaseManager.db.loNData.findMany({where: {channelID: interaction.channelId}, include: {votes: true}});
         const embed = new EmbedBuilder();
 
         const summary = {
@@ -129,10 +125,9 @@ export class LewdOrNsFW extends Module {
     }
 
     async getOwnStatistics(interaction: ChatInputCommandInteraction) {
-        const collection = databaseManager.db.collection<LoNData>("LoN-data");
         const userID = interaction.user.id;
         const embed = new EmbedBuilder();
-        const data = (await collection.find({channelID: interaction.channelId, "votes.userID": userID}).toArray()).filter((entry) => !entry.deleted);
+        const data = (await databaseManager.db.loNData.findMany({where: {channelID: interaction.channelId}, include: {votes: true}})).filter((entry) => !entry.deleted);
         const summary = {
             save: 0,
             lewd: 0,
@@ -158,34 +153,32 @@ export class LewdOrNsFW extends Module {
     }
 
     async addLoNPicture(interaction: ChatInputCommandInteraction) {
-        const collection = databaseManager.db.collection<LoNPicture>("LoN-pictures");
         const url = interaction.options.getString("url");
 
         if(!url.endsWith(".png") && !url.endsWith(".jpg") && !url.endsWith(".jpeg") && !url.endsWith(".gif")) return interaction.reply({content: "Die URL muss auf ein Bild enden!", ephemeral: true});
-        collection.insertOne({picture: url, channelID: interaction.channelId, done: false});
+        databaseManager.db.loNCustomPicture.create({data: {picture: url, done: false}});
         interaction.reply({content: "Das Bild wurde der Queue erfolgreich hinzugefügt!", ephemeral: true});
     }
 
     async deleteLoNPicture(interaction: ButtonInteraction) {
-        const collection = databaseManager.db.collection<LoNData>("LoN-data");
-        const data = await collection.findOne({messageID: interaction.message.id});
+        const data = await databaseManager.db.loNData.findUnique({where: {messageID: interaction.message.id}});
         if(!data || data.deleted) return;
         const channel = await botManager.client.channels.fetch(data.channelID) as TextChannel;
         const message = await channel.messages.fetch(data.messageID);
         message.delete();
-        collection.updateOne({messageID: interaction.message.id}, {$set: {deleted: true}});
+        await databaseManager.db.loNData.update({where: {messageID: interaction.message.id}, data: {deleted: true}})
         sendNextPicture(data.channelID);
     }
 
     async handleLoNInteraction(interaction: ButtonInteraction) {
         if(!CHANNELS.includes(interaction.channelId)) return interaction.reply({content: "Dieser Channel ist nicht für das Lewd oder NSFW Spiel freigegeben!", ephemeral: true});
-        const collection = databaseManager.db.collection<LoNData>("LoN-data");
-        const data = await collection.findOne({messageID: interaction.message.id});
+        const data = await databaseManager.db.loNData.findUnique({where: {messageID: interaction.message.id}, include: {votes: true, picture: true}});
         const type = interaction.customId.split("-")[1];
         if(!data) return;
         const newVotes = data.votes;
         if(newVotes.find((item) => item.userID == interaction.user.id)) return interaction.reply({content: "Du hast bereits abgestimmt!", ephemeral: true});
-        newVotes.push({userID: interaction.user.id, vote: type});
+        //newVotes.push({userID: interaction.user.id, vote: type});
+        await databaseManager.db.loNVotes.create({data: {userID: interaction.user.id, vote: type, dataID: data.id}})
 
         const messageContent = buildMessage(data.picture,
             newVotes.filter((item) => item.vote == "save").length,
@@ -203,14 +196,12 @@ export class LewdOrNsFW extends Module {
         const channel = await botManager.client.channels.fetch(data.channelID) as TextChannel;
         const message = await channel.messages.fetch(data.messageID);
         message.edit(messageContent);
-
-        collection.updateOne({messageID: interaction.message.id}, {$set: {votes: newVotes}})
         interaction.deferUpdate();
     }
 }
 
 async function getPicture(channelID: string):Promise<LoNImage> {
-    const collection = databaseManager.db.collection<LoNPicture>("LoN-pictures");
+    /**const collection = databaseManager.db.collection<LoNPicture>("LoN-pictures");
     const picture = await collection.findOne({done: false, channelID: channelID});
     if(picture) {
         await collection.updateOne({picture: picture.picture, channelID: channelID}, {$set: {done: true}});
@@ -224,7 +215,7 @@ async function getPicture(channelID: string):Promise<LoNImage> {
             source: picture.picture,
             rating: "e",
         }
-    }
+    }**/
 
     const response = await axios.get("https://yande.re/post.json?limit=100&page=" + (Math.floor(Math.random() * 100)))
     const data:LoNImage[] = response.data.filter((item: any) => (item.rating == "q" || item.rating == "e") && !item.has_children);
@@ -236,21 +227,20 @@ async function getPicture(channelID: string):Promise<LoNImage> {
 async function sendNextPicture(channel:string){
     if(!CHANNELS.includes(channel)) return;
     const picture = await getPicture(channel);
-    const collection = databaseManager.db.collection<LoNData>("LoN-data");
-    const lastPicture = await collection.findOne({channelID: channel, deleted: false}, {sort: {$natural: -1}});
+    const image = await databaseManager.db.loNImage.create({data: picture});
+    const lastPicture = await databaseManager.db.loNData.findFirst({where: {channelID: channel}, orderBy: {messageID: "desc"},include: {votes: true}});
     if(lastPicture && lastPicture.votes.length < lastPicture.neededVotes) return;
 
     const discordChannel = await botManager.client.channels.fetch(channel)
     if(!discordChannel.isTextBased()) return;
     const message = await (<TextChannel> discordChannel).send(buildMessage(picture, 0, 0, 0))
-    collection.insertOne({
+    await databaseManager.db.loNData.create({data: {
         channelID: channel,
         neededVotes: lastPicture? lastPicture.neededVotes : 3 ,
-        votes: [],
-        picture: picture,
+        pictureID: picture.id,
         messageID: message.id,
         deleted: false
-    })
+    }})
 }
 
 function buildMessage(picture: LoNImage, save:number, lewd:number, nsfw:number){
