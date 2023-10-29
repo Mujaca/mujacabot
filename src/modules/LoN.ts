@@ -57,26 +57,26 @@ export class LewdOrNsFW extends Module {
     }
 
     async addLoNChannel(interaction: ChatInputCommandInteraction) {
-        const channel = databaseManager.db.loNChannel.findUnique({where: {channelID: interaction.channelId}});
+        const channel = await databaseManager.db.loNChannel.findUnique({where: {channelID: interaction.channelId}});
         if(channel) {
-            databaseManager.db.loNChannel.delete({where: {channelID: interaction.channelId}});
+            await databaseManager.db.loNChannel.delete({where: {channelID: interaction.channelId}});
             CHANNELS = CHANNELS.filter((channel) => channel !== interaction.channelId);
             interaction.reply({content: "Der Channel wurde erfolgreich entfernt!", ephemeral: true});
             return;
         }
 
         CHANNELS.push(interaction.channelId);
-        databaseManager.db.loNChannel.create({data: {channelID: interaction.channelId}});
+        await databaseManager.db.loNChannel.create({data: {channelID: interaction.channelId}});
         interaction.reply({content: "Der Channel wurde erfolgreich hinzugefügt!", ephemeral: true});
         sendNextPicture(interaction.channelId);
     }
 
     async forceLoNPicture(interaction: ChatInputCommandInteraction) {
         const data = await databaseManager.db.loNData.findMany({where: {channelID: interaction.channelId}, orderBy: {messageID: "desc"}});
-        if(!data) return interaction.reply({content: "Es wurde noch kein Bild in diesem Channel hinzugefügt!", ephemeral: true});
+        if(!data && data.length == 0) return interaction.reply({content: "Es wurde noch kein Bild in diesem Channel hinzugefügt!", ephemeral: true});
         
-        await databaseManager.db.loNData.updateMany({where: {channelID: interaction.channelId, messageID: data[0].messageID}, data: {deleted: true}});
-        sendNextPicture(interaction.channelId);
+        //await databaseManager.db.loNData.update({where: {channelID: interaction.channelId, messageID: data[0].messageID}, data: {deleted: true}});
+        await sendNextPicture(interaction.channelId);
         return interaction.reply({content: "Das nächste Bild wurde erfolgreich gesendet!", ephemeral: true});
     }
 
@@ -136,7 +136,9 @@ export class LewdOrNsFW extends Module {
         type summaryType = keyof typeof summary;
 
         for(let entry of data) {
-            const vote:summaryType = entry.votes.filter(vote => vote.userID === userID)[0].vote as summaryType;
+            const votes = entry.votes.filter(vote => vote.userID === userID);
+            if(votes.length == 0) continue;
+            const vote:summaryType = votes[0].vote as summaryType;
             summary[vote]++;
         }
 
@@ -175,9 +177,9 @@ export class LewdOrNsFW extends Module {
         const data = await databaseManager.db.loNData.findUnique({where: {messageID: interaction.message.id}, include: {votes: true, picture: true}});
         const type = interaction.customId.split("-")[1];
         if(!data) return;
-        const newVotes = data.votes;
+        const newVotes = data.votes as {userID: string, vote: string}[];
         if(newVotes.find((item) => item.userID == interaction.user.id)) return interaction.reply({content: "Du hast bereits abgestimmt!", ephemeral: true});
-        //newVotes.push({userID: interaction.user.id, vote: type});
+        newVotes.push({userID: interaction.user.id, vote: type});
         await databaseManager.db.loNVotes.create({data: {userID: interaction.user.id, vote: type, dataID: data.id}})
 
         const messageContent = buildMessage(data.picture,
@@ -224,18 +226,35 @@ async function getPicture(channelID: string):Promise<LoNImage> {
     return data[RNG];
 }
 
+async function createLoNPicture(data:LoNImage) {
+    const exeists = await databaseManager.db.loNImage.findUnique({where: {id: data.id}});
+    if(exeists) return exeists;
+
+    const create = await databaseManager.db.loNImage.create({data: {
+        id: data.id,
+        tags: data.tags,
+        hasChildren: data.hasChildren,
+        file_url: data.file_url,
+        preview_url: data.preview_url,
+        source: data.source,
+        rating: data.rating
+    }});
+    
+
+    return create;
+}
+
 async function sendNextPicture(channel:string){
     if(!CHANNELS.includes(channel)) return;
     const picture = await getPicture(channel);
-    const image = await databaseManager.db.loNImage.create({data: picture});
+    const image = createLoNPicture(picture);
     const lastPicture = await databaseManager.db.loNData.findFirst({where: {channelID: channel}, orderBy: {messageID: "desc"},include: {votes: true}});
-    if(lastPicture && lastPicture.votes.length < lastPicture.neededVotes) return;
 
     const discordChannel = await botManager.client.channels.fetch(channel)
     if(!discordChannel.isTextBased()) return;
     const message = await (<TextChannel> discordChannel).send(buildMessage(picture, 0, 0, 0))
     await databaseManager.db.loNData.create({data: {
-        channelID: channel,
+        channelID: message.channelId,
         neededVotes: lastPicture? lastPicture.neededVotes : 3 ,
         pictureID: picture.id,
         messageID: message.id,

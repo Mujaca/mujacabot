@@ -1,5 +1,5 @@
 export interface LoNImage {
-    id: string;
+    id: number;
     tags: string;
     hasChildren: boolean;
     file_url: string;

@@ -24,24 +24,25 @@ model LoNData {
   neededVotes Int
   votes       LoNVotes[]
   picture     LoNImage   @relation(fields: [pictureID], references: [id])
-  pictureID   String
+  pictureID   Int
   deleted     Boolean    @default(false)
 }
 
 model LoNVotes {
+  id     Int    @id @default(autoincrement())
   userID String
   vote   String
   data   LoNData @relation(fields: [dataID], references: [id])
-  dataID Int @unique
+  dataID Int
 }
 
 model LoNImage {
-  id String @unique
+  id Int @unique
   data LoNData[]
-  tags String
-  hasChildren Boolean
-  file_url String
-  preview_url String
+  tags String @db.LongText
+  hasChildren Boolean @default(false)
+  file_url String @db.LongText
+  preview_url String @db.LongText
   source String
   rating String
 }
