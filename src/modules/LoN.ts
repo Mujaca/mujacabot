@@ -185,11 +185,11 @@ export class LewdOrNsFW extends Module {
         const messageContent = buildMessage(data.picture,
             newVotes.filter((item) => item.vote == "save").length,
             newVotes.filter((item) => item.vote == "lewd").length,
-            newVotes.filter((item) => item.vote == "nsfw").length
+            newVotes.filter((item) => item.vote == "nsfw").length,
+            newVotes.length >= data.neededVotes ? data.picture.tags : undefined
         );
 
         if(newVotes.length == data.neededVotes) {
-            messageContent.embeds[0].addFields([{name: "Tags", value: data.picture.tags}])
             setTimeout(() => {
                 sendNextPicture(data.channelID);                
             }, 1500);
@@ -262,7 +262,7 @@ async function sendNextPicture(channel:string){
     }})
 }
 
-function buildMessage(picture: LoNImage, save:number, lewd:number, nsfw:number){
+function buildMessage(picture: LoNImage, save:number, lewd:number, nsfw:number, tags?: string){
     const embed = new EmbedBuilder()
         .setTitle("Lewd or NSFW")
         .setDescription("Stimme für das Bild ab, aber bedenke: Deine Stimme ist Final. Überleg es dir also genau!")
@@ -273,6 +273,8 @@ function buildMessage(picture: LoNImage, save:number, lewd:number, nsfw:number){
         ])
         .setImage(picture.preview_url)
         .setColor("Red");
+
+        if(tags) embed.addFields([{name: "Tags", value: tags}]);
     
     const saveButton = new ButtonBuilder()
         .setCustomId("lon-save")
