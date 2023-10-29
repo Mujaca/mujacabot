@@ -188,7 +188,7 @@ export class LewdOrNsFW extends Module {
             newVotes.filter((item) => item.vote == "nsfw").length
         );
 
-        if(newVotes.length >= data.neededVotes) {
+        if(newVotes.length == data.neededVotes) {
             messageContent.embeds[0].addFields([{name: "Tags", value: data.picture.tags}])
             setTimeout(() => {
                 sendNextPicture(data.channelID);                
