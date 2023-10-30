@@ -19,10 +19,7 @@ async function registerCommand(commandName:string, commandClass:command){
 }
 
 async function submitCommands() {
-    await botManager.rest.put(Routes.applicationGuildCommands("347650737741758465", "469780030483070977"), {
-        body: bodyArray
-    });
-    await botManager.rest.put(Routes.applicationGuildCommands("347650737741758465", "1041336029396877362"), {
+    await botManager.rest.put(Routes.applicationGuildCommands(process.env.APPLICATION_ID, process.env.TESTSERVER), {
         body: bodyArray
     });
 
