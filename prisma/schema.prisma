@@ -10,6 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model BotUser {
+  id String @unique
+  name String
+  LoNBookmarks LoNBookmark[]
+}
+
 model LoNChannel {
   id        Int       @id @default(autoincrement())
   channelID String    @unique
@@ -45,10 +51,19 @@ model LoNImage {
   preview_url String @db.LongText
   source String
   rating String
+  bookmarks LoNBookmark[]
 }
 
 model LoNCustomPicture {
   id      Int       @id @default(autoincrement())
   picture String
   done    Boolean
+}
+
+model LoNBookmark {
+  id Int @id @default(autoincrement())
+  user BotUser @relation(fields: [userID], references: [id])
+  userID String
+  picture LoNImage @relation(fields: [pictureID], references: [id])
+  pictureID Int
 }

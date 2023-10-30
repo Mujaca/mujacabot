@@ -1,3 +1,5 @@
+import { BotUser } from "./bot";
+
 export interface LoNImage {
     id: number;
     tags: string;
@@ -24,4 +26,12 @@ export interface LoNPicture {
     channelID: string;
     picture: string;
     done: boolean;
+}
+
+export interface LoNBookmark {
+    id: number;
+    userID: string;
+    user: BotUser;
+    pictureID: number;
+    picture: LoNPicture;
 }

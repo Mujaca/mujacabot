@@ -3,14 +3,17 @@ import { command } from "../classes/command";
 import commandManager from '../manager/commandManager';
 import interactionManager from "../manager/interactionManager";
 import botManager from "../manager/botManager";
-import { ChatInputCommandInteraction, TextChannel, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ActionRow, ButtonStyle, Interaction, ButtonInteraction, messageLink } from 'discord.js';
+import { ChatInputCommandInteraction, TextChannel, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ActionRow, ButtonStyle, Interaction, ButtonInteraction, messageLink, Message, InteractionResponse } from 'discord.js';
 import { PermissionFlagsBits } from '@discordjs/core';
 import databaseManager from '../manager/dbManager';
 import { interaction } from "../classes/interaction";
 import axios from "axios";
 import { LoNData, LoNImage, LoNPicture } from "../@types/LoN";
+import { LoNBookmark } from "@prisma/client";
 
 let CHANNELS:string[] = [];
+const bookmarkMessages:Map<string, bookmarkGalarey> = new Map();
+
 export class LewdOrNsFW extends Module {
 
     constructor() {
@@ -39,17 +42,25 @@ export class LewdOrNsFW extends Module {
         const ownLoNStatistics = new command("lon-own-statistics", "Zeigt deine Statistiken des Lewd oder NSFW Spiels an", this.getOwnStatistics);
         ownLoNStatistics.commandBuilder.setNSFW(true);
 
+        const LoNBookmarks = new command("lon-bookmarks", "Zeigt deine Lesezeichen an", this.showBookmarks);
+        LoNBookmarks.commandBuilder.setNSFW(true);
+
         commandManager.registerCommand("lon", LoNCommand)
         commandManager.registerCommand("lon-update", LoNUpdateVoteCount)
         commandManager.registerCommand("lon-add", LoNAddPicture)
         commandManager.registerCommand("lon-force", LoNForcePicture)
         commandManager.registerCommand("lon-statistics", LoNStatistics)
         commandManager.registerCommand("lon-own-statistics", ownLoNStatistics)
+        commandManager.registerCommand("lon-bookmarks", LoNBookmarks)
 
         interactionManager.registerInteraction("lon-save", new interaction("lon-save", this.handleLoNInteraction));
         interactionManager.registerInteraction("lon-lewd", new interaction("lon-lewd", this.handleLoNInteraction));
         interactionManager.registerInteraction("lon-nsfw", new interaction("lon-nsfw", this.handleLoNInteraction));
         interactionManager.registerInteraction("lon-delete", new interaction("lon-delete", this.deleteLoNPicture));
+        interactionManager.registerInteraction("lon-bookmark", new interaction("lon-bookmark", this.handleBookmarkInteraction));
+        interactionManager.registerInteraction("lon-previeous", new interaction("lon-previeous", this.previeousBookmark));
+        interactionManager.registerInteraction("lon-next", new interaction("lon-next", this.nextBookmark));
+        interactionManager.registerInteraction("lon-delete-bookmark", new interaction("lon-delete-bookmark", this.deleteBookmark));
 
         databaseManager.db.loNChannel.findMany().then((data) => {
             CHANNELS = data.map((data) => data.channelID);
@@ -169,6 +180,7 @@ export class LewdOrNsFW extends Module {
         const message = await channel.messages.fetch(data.messageID);
         message.delete();
         await databaseManager.db.loNData.update({where: {messageID: interaction.message.id}, data: {deleted: true}})
+        await databaseManager.db.loNBookmark.deleteMany({where: {pictureID: data.pictureID}});
         sendNextPicture(data.channelID);
     }
 
@@ -199,6 +211,83 @@ export class LewdOrNsFW extends Module {
         const message = await channel.messages.fetch(data.messageID);
         message.edit(messageContent);
         interaction.deferUpdate();
+    }
+
+    async handleBookmarkInteraction(interaction: ButtonInteraction) {
+        const data = await databaseManager.db.loNData.findUnique({where: {messageID: interaction.message.id}, include: {picture: true}});
+        let user = await databaseManager.db.botUser.findUnique({where: {id: interaction.user.id}});
+
+        if(!user) user = await databaseManager.db.botUser.create({data: {id: interaction.user.id, name: interaction.user.username}});
+        const bookmark = await databaseManager.db.loNBookmark.findFirst({where: {userID: user.id, pictureID: data.picture.id}});
+
+        if(bookmark) return interaction.reply({content: "Das Bild ist bereits in deinen Lesezeichen!", ephemeral: true});
+
+
+        await databaseManager.db.loNBookmark.create({data: {userID: user.id, pictureID: data.picture.id}});
+        interaction.reply({content: "Das Bild wurde erfolgreich zu deinen Lesezeichen hinzugefügt!", ephemeral: true});
+    }
+
+    async showBookmarks(interaction: ChatInputCommandInteraction) {
+        const user = await databaseManager.db.botUser.findUnique({where: {id: interaction.user.id}});
+        if(!user) return interaction.reply({content: "Du hast noch keine Lesezeichen!", ephemeral: true});
+        const bookmarks = await databaseManager.db.loNBookmark.findMany({where: {userID: user.id}, include: {picture: true}});
+        if(bookmarks.length == 0) return interaction.reply({content: "Du hast noch keine Lesezeichen!", ephemeral: true});
+        const firstBookmark = bookmarks[0];
+
+        const embed = new EmbedBuilder();
+        embed.setTitle("Lesezeichen " + (1) + "/" + bookmarks.length);
+        embed.setDescription(firstBookmark.picture.tags);
+        embed.setImage(firstBookmark.picture.preview_url);
+        embed.setColor("DarkAqua");
+
+        const previeousButton = new ButtonBuilder()
+        .setCustomId("lon-previeous")
+        .setLabel("←")
+        .setStyle(ButtonStyle.Primary)
+
+        const nextButton = new ButtonBuilder()
+        .setCustomId("lon-next")
+        .setLabel("→")
+        .setStyle(ButtonStyle.Primary)
+
+        const deleteButton = new ButtonBuilder()
+        .setCustomId("lon-delete-bookmark")
+        .setLabel("Löschen")
+        .setStyle(ButtonStyle.Danger)
+
+        const showPictureButton = new ButtonBuilder()
+        .setURL(firstBookmark.picture.file_url)
+        .setLabel("Show Picture")
+        .setStyle(ButtonStyle.Link)
+
+    const row:any = new ActionRowBuilder()
+        .setComponents(previeousButton, nextButton, deleteButton, showPictureButton)
+
+        const reply = await interaction.reply({embeds: [embed], components: [row], ephemeral: true});
+        const message = await reply.fetch();
+        bookmarkMessages.set(message.id, new bookmarkGalarey(bookmarks, message, reply));
+    }
+
+    async nextBookmark(interaction: ButtonInteraction) {
+        const data = bookmarkMessages.get(interaction.message.id);
+        if(!data) return interaction.reply({content: "Es ist ein Fehler aufgetreten!", ephemeral: true});
+        await data.next();
+        await interaction.deferUpdate();
+    }
+
+    async previeousBookmark(interaction: ButtonInteraction) {
+        const data = bookmarkMessages.get(interaction.message.id);
+        if(!data) return interaction.reply({content: "Es ist ein Fehler aufgetreten!", ephemeral: true});
+        await data.previeous();
+        await interaction.deferUpdate();
+    }
+
+    async deleteBookmark(interaction: ButtonInteraction) {
+        const data = bookmarkMessages.get(interaction.message.id);
+        if(!data) return interaction.reply({content: "Es ist ein Fehler aufgetreten!", ephemeral: true});
+
+        await data.delete();
+        await interaction.deferUpdate();
     }
 }
 
@@ -297,13 +386,82 @@ function buildMessage(picture: LoNImage, save:number, lewd:number, nsfw:number, 
         .setLabel("DELETE ASAP!")
         .setStyle(ButtonStyle.Danger)
 
+    const bookmarkButton = new ButtonBuilder()
+        .setCustomId("lon-bookmark")
+        .setLabel("Als Lesezeichen speichern")
+        .setStyle(ButtonStyle.Primary)
+
     const showPictureButton = new ButtonBuilder()
         .setURL(picture.file_url)
         .setLabel("Show Picture")
         .setStyle(ButtonStyle.Link)
 
     const row:any = new ActionRowBuilder()
-        .setComponents(saveButton, lewdButton, nsfwButton, ohShitButton, showPictureButton)
+        .setComponents(saveButton, lewdButton, nsfwButton, ohShitButton)
+    const row2:any = new ActionRowBuilder()
+        .setComponents(bookmarkButton, showPictureButton)
 
-    return {embeds: [embed], components: [row]};
+    return {embeds: [embed], components: [row, row2]};
+}
+
+class bookmarkGalarey {
+
+    private index = 0;
+    
+    constructor(private bookmarks: LoNBookmark[], private message: Message, private interactionRes: InteractionResponse) {}
+
+    public async next() {
+        this.index++;
+        if(this.index == this.bookmarks.length) this.index = 0;
+        return await this.editMessage();
+    }
+
+    public async previeous() {
+        this.index--;
+        if(this.index < 0) this.index = this.bookmarks.length - 1;
+        return await this.editMessage();
+    }
+
+    public async delete() {
+        const bookmark = this.bookmarks[this.index];
+        await databaseManager.db.loNBookmark.delete({where: {id: bookmark.id}});
+        this.bookmarks = this.bookmarks.filter((item) => item.id !== bookmark.id);
+        if(this.bookmarks.length == 0) return await this.interactionRes.delete();
+        return await this.editMessage();
+    }
+
+    private async editMessage() {
+        await botManager.client.channels.fetch(this.message.channelId);
+        const firstBookmark = this.bookmarks[this.index] as any;
+        const embed = new EmbedBuilder();
+        embed.setTitle("Lesezeichen " + (this.index + 1) + "/" + this.bookmarks.length);
+        embed.setDescription(firstBookmark.picture.tags);
+        embed.setImage(firstBookmark.picture.preview_url);
+        embed.setColor("DarkAqua");
+
+        const previeousButton = new ButtonBuilder()
+        .setCustomId("lon-previeous")
+        .setLabel("←")
+        .setStyle(ButtonStyle.Primary)
+
+        const nextButton = new ButtonBuilder()
+        .setCustomId("lon-next")
+        .setLabel("→")
+        .setStyle(ButtonStyle.Primary)
+
+        const deleteButton = new ButtonBuilder()
+        .setCustomId("lon-delete-bookmark")
+        .setLabel("Löschen")
+        .setStyle(ButtonStyle.Danger)
+
+        const showPictureButton = new ButtonBuilder()
+        .setURL(firstBookmark.picture.file_url)
+        .setLabel("Show Picture")
+        .setStyle(ButtonStyle.Link)
+
+        const row:any = new ActionRowBuilder()
+        .setComponents(previeousButton, nextButton, deleteButton, showPictureButton)
+
+        return await this.interactionRes.edit({embeds: [embed], components: [row]});
+    }
 }
