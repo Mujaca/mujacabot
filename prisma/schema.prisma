@@ -14,6 +14,7 @@ model BotUser {
   id String @unique
   name String
   LoNBookmarks LoNBookmark[]
+  TcGPlayers TcGPlayer?
 }
 
 model LoNChannel {
@@ -66,4 +67,46 @@ model LoNBookmark {
   userID String
   picture LoNImage @relation(fields: [pictureID], references: [id])
   pictureID Int
+}
+
+model TcGPlayer {
+  id Int @id @default(autoincrement())
+  user BotUser @relation(fields: [userID], references: [id])
+  userID String @unique
+  money Int
+  cards TcGCard[]
+  cardSets TcGCardSet[]
+}
+
+model TcGCard {
+  id String @id
+  ownedBy TcGPlayer[]
+  cardSets TcGCardSet[]
+  name String
+  supertype String
+  subtype TcGSubtype[]
+  types TcGType[]
+  evolvesFrom TcGCard? @relation("evolvesTo", fields: [evolvesFromID], references: [id])
+  evolvesFromID String?
+  evolvesTo TcGCard[] @relation("evolvesTo")
+}
+
+model TcGSubtype {
+  id Int @id @default(autoincrement())
+  subtype String
+  cards TcGCard[]
+}
+
+model TcGType {
+  id Int @id @default(autoincrement())
+  type String
+  cards TcGCard[]
+}
+
+model TcGCardSet {
+  id Int @id @default(autoincrement())
+  name String
+  cards TcGCard[]
+  player TcGPlayer @relation(fields: [playerID], references: [id])
+  playerID Int
 }
