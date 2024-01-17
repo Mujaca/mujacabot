@@ -15,6 +15,7 @@ model BotUser {
   name String
   LoNBookmarks LoNBookmark[]
   TcGPlayers TcGPlayer?
+  RPGCharacters RPGCharacter[]
 }
 
 model LoNChannel {
@@ -109,4 +110,60 @@ model TcGCardSet {
   cards TcGCard[]
   player TcGPlayer @relation(fields: [playerID], references: [id])
   playerID Int
+}
+
+model RPGWorld {
+  id Int @id @default(autoincrement())
+  channelID String @unique
+  name String
+  description String
+  cities RPGCity[]
+  players RPGCharacter[]
+}
+
+model RPGCharacter {
+  id Int @id @default(autoincrement())
+  user BotUser @relation(fields: [userID], references: [id])
+  userID String
+  name String
+  description String
+  health Int
+  maxHealth Int
+  xp Int
+  gold Int
+  world RPGWorld @relation(fields: [worldID], references: [id])
+  worldID Int
+  inventory RPGItem[]
+}
+
+model RPGItem {
+  id Int @id @default(autoincrement())
+  name String
+  description String
+  damage Int
+  cost Int
+  owned RPGCharacter[]
+}
+
+model RPGCity {
+  id Int @id @default(autoincrement())
+  name String
+  description String
+  world RPGWorld @relation(fields: [worldID], references: [id])
+  worldID Int
+  npcs RPGNPC[]
+}
+
+model RPGNPC {
+  id Int @id @default(autoincrement())
+  name String
+  description String
+  city RPGCity @relation(fields: [cityID], references: [id])
+  cityID Int
+}
+
+model RPGGoal {
+  id Int @id @default(autoincrement())
+  name String
+  description String
 }

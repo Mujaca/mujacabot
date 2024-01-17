@@ -13,6 +13,7 @@ import { remindMe, remindMeDelete, remindMeJoin } from './commands/remindme';
 import { interaction } from './classes/interaction';
 import interactionManager from './manager/interactionManager';
 import { PaP } from './modules/pen-and-paper';
+import { TRPG } from './modules/trpg/trpg';
 
 initialiseConsole();
 connectDatabase();
@@ -23,7 +24,7 @@ moduleManager.registerModule("LewdOrNsFW", new LewdOrNsFW());
 //moduleManager.registerModule("profilePictures", new profilePictures());
 //moduleManager.registerModule("TCG", new TCG());
 moduleManager.registerModule('PaP', new PaP());
-//moduleManager.registerModule("StarRail", new StarRail());
+moduleManager.registerModule('trpg', new TRPG());
 
 //Register Commands outside of modules
 /**const remindmeCommand = new command("remindme", "Erstellt eine Erinnerung", remindMe);
