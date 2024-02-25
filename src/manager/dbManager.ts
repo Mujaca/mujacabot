@@ -6,6 +6,8 @@ export async function connectDatabase(){
     await prisma.$connect();
     console.log("Connected to database");
     backUpDatabase();
+
+    setInterval(backUpDatabase, 1000 * 60 * 60 * 24);
 }
 
 async function backUpDatabase(){
