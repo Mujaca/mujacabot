@@ -70,6 +70,12 @@ model LoNBookmark {
   pictureID Int
 }
 
+model wolvesvilleInfoChannel {
+  id        Int       @id @default(autoincrement())
+  channelID String    @unique
+  lastSend  DateTime?
+}
+
 model TcGPlayer {
   id Int @id @default(autoincrement())
   user BotUser @relation(fields: [userID], references: [id])
