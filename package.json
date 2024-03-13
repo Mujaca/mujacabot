@@ -1,6 +1,6 @@
 {
   "name": "mujaca-bot",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "The third try for my Discord Bot. Here goes nothing!",
   "main": "dist/index.js",
   "scripts": {
@@ -16,8 +16,8 @@
     "Discord",
     "DiscordJS"
   ],
-  "author": "Mujaca#2202",
-  "license": "ISC",
+  "author": "Mujaca",
+  "license": "GPL",
   "bugs": {
     "url": "https://github.com/Mujaca/mujacabot/issues"
   },
