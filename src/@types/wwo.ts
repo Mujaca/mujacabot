@@ -43,7 +43,7 @@ export interface avatarItemSet {
     promoImagePrimaryColor: string,
 }
 
-export interface avatarItemCollection extends avatarItemSets {
+export interface avatarItemCollection extends avatarItemSet {
     iconUrl: string,
     bonusLoadingScreenId: string,
     bonusMinItemCount: number
@@ -82,4 +82,82 @@ export interface loadingScreen extends Item{
     image: Image,
     imageWide: Image,
     imagePrimaryColor: string,
+}
+
+export interface roleIcon {
+    image: Image,
+    roleId: string
+}
+
+export interface advancedRoleCardOffers {
+    id: string,
+    advancedRoleId: string,
+    avatarItemSet: string,
+    abilityExchangeVoucherCount: number,
+    talismanCount: number,
+    loyaltyTokenCount: number,
+    promoImageUrl: string,
+}
+
+export interface roses {
+    id: string,
+    type: string
+}
+
+export interface talismans {
+    id: string,
+    roleId: string,
+    deprecated: boolean
+}
+
+export interface sharedAvatar {
+    id: string,
+    avatar: Image
+}
+
+export interface roleRotation {
+    gameMode: string,
+    languages: string[],
+    roleRotation: {
+        roleRotation: {
+            id: string,
+            roles: {
+                probability: number,
+                role: string
+            }[]
+        },
+        probability: number
+    }[],
+    minWinRequirement: number,
+    fontAwesomeIcon: string
+}
+
+interface battlePassReward{
+    type: string,
+    amount: number,
+    avatarItemId: string,
+    free: boolean,
+}
+
+export interface battlePass {
+    startTime: string,
+    number: number,
+    durationInDays: number,
+    goldPrice: number,
+    goldPricePerReward: number,
+    gemPricePerReward: number,
+    xpPerReward: number,
+    rewards: battlePassReward[],
+    iconUrl: string,
+    seasonBackgroundId: string
+}
+
+export interface battlePassChallange {
+    id: string,
+    description: string,
+    target: number,
+    rewardInGold: number,
+    iconUrl: string,
+    startTime: string,
+    durationInDays: number,
 }
