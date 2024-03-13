@@ -127,7 +127,7 @@ model RPGChannel {
 
 model RPGMessage {
   id Int @id @default(autoincrement())
-  content String
+  content String @db.LongText
   username    String
   displayName String
   profilePicture  String
@@ -191,7 +191,7 @@ model RPGGoal {
 
 model AIUsage {
   id Int @id @default(autoincrement())
-  input String
-  output String
+  input String @db.LongText
+  output String @db.LongText
   created DateTime @default(now())
 }
