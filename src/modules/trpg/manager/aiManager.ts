@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import databaseManager from '../../../manager/dbManager';
-import { ChatCompletionMessageParam } from 'openai/resources';
+import { Chat, ChatCompletionMessageParam } from 'openai/resources';
 
 const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
@@ -73,17 +73,17 @@ const systemPrompts = {
     `
 };
 
-export async function generate(type: keyof typeof systemPrompts, input: ChatCompletionMessageParam[], toReplace: { [key: string]: string } = {}) {
+export async function generate(type: keyof typeof systemPrompts, inputArr: ChatCompletionMessageParam[], toReplace: { [key: string]: string } = {}) {
 	let system = systemPrompts[type];
 	for (let key in toReplace) {
 		system = system.replaceAll(`([${key}])`, toReplace[key]);
 	}
 
-	input = [{ role: 'system', content: systemPrompts[type] }, ...input];
+	const input:ChatCompletionMessageParam[] = [{ role: 'system', content: systemPrompts[type] }, ...inputArr];
 
 	const response = await openai.chat.completions.create({
 		messages: input,
-		model: 'gpt-4-turbo-preview',
+		model: 'gpt-3.5-turbo',
 		temperature: 1.5,
 		max_tokens: 1024,
 	});
