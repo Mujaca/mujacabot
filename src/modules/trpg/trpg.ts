@@ -103,8 +103,8 @@ export class TRPG extends Module {
 
 		const answer = await handleMessage(message.content);
 		if(answer === null) return;
+		await broadcast(answer.npc.name, answer.content);
 
-		broadcast(answer.npc.name, answer.content);
 		await dbManager.db.rPGMessage.create({
 			data: {
 				content: answer.content || "",
