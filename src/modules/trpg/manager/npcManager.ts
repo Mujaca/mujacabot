@@ -40,8 +40,6 @@ export async function handleMessage(message:string) {
         })
         
         const answerString = await generate('dialog', mapped)
-        console.log(answerString)
-
         const answer = JSON.parse(answerString);
         answer.npc = npc;
 
