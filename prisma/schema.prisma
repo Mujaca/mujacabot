@@ -11,10 +11,10 @@ datasource db {
 }
 
 model BotUser {
-  id String @unique
-  name String
-  LoNBookmarks LoNBookmark[]
-  TcGPlayers TcGPlayer?
+  id            String         @unique
+  name          String
+  LoNBookmarks  LoNBookmark[]
+  TcGPlayers    TcGPlayer?
   RPGCharacters RPGCharacter[]
 }
 
@@ -37,7 +37,7 @@ model LoNData {
 }
 
 model LoNVotes {
-  id     Int    @id @default(autoincrement())
+  id     Int     @id @default(autoincrement())
   userID String
   vote   String
   data   LoNData @relation(fields: [dataID], references: [id])
@@ -45,28 +45,28 @@ model LoNVotes {
 }
 
 model LoNImage {
-  id Int @unique
-  data LoNData[]
-  tags String @db.LongText
-  hasChildren Boolean @default(false)
-  file_url String @db.LongText
-  preview_url String @db.LongText
-  source String
-  rating String
-  bookmarks LoNBookmark[]
+  id          Int           @unique
+  data        LoNData[]
+  tags        String        @db.LongText
+  hasChildren Boolean       @default(false)
+  file_url    String        @db.LongText
+  preview_url String        @db.LongText
+  source      String
+  rating      String
+  bookmarks   LoNBookmark[]
 }
 
 model LoNCustomPicture {
-  id      Int       @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   picture String
   done    Boolean
 }
 
 model LoNBookmark {
-  id Int @id @default(autoincrement())
-  user BotUser @relation(fields: [userID], references: [id])
-  userID String
-  picture LoNImage @relation(fields: [pictureID], references: [id])
+  id        Int      @id @default(autoincrement())
+  user      BotUser  @relation(fields: [userID], references: [id])
+  userID    String
+  picture   LoNImage @relation(fields: [pictureID], references: [id])
   pictureID Int
 }
 
@@ -77,99 +77,121 @@ model wolvesvilleInfoChannel {
 }
 
 model TcGPlayer {
-  id Int @id @default(autoincrement())
-  user BotUser @relation(fields: [userID], references: [id])
-  userID String @unique
-  money Int
-  cards TcGCard[]
+  id       Int          @id @default(autoincrement())
+  user     BotUser      @relation(fields: [userID], references: [id])
+  userID   String       @unique
+  money    Int
+  cards    TcGCard[]
   cardSets TcGCardSet[]
 }
 
 model TcGCard {
-  id String @id
-  ownedBy TcGPlayer[]
-  cardSets TcGCardSet[]
-  name String
-  supertype String
-  subtype TcGSubtype[]
-  types TcGType[]
-  evolvesFrom TcGCard? @relation("evolvesTo", fields: [evolvesFromID], references: [id])
+  id            String       @id
+  ownedBy       TcGPlayer[]
+  cardSets      TcGCardSet[]
+  name          String
+  supertype     String
+  subtype       TcGSubtype[]
+  types         TcGType[]
+  evolvesFrom   TcGCard?     @relation("evolvesTo", fields: [evolvesFromID], references: [id])
   evolvesFromID String?
-  evolvesTo TcGCard[] @relation("evolvesTo")
+  evolvesTo     TcGCard[]    @relation("evolvesTo")
 }
 
 model TcGSubtype {
-  id Int @id @default(autoincrement())
+  id      Int       @id @default(autoincrement())
   subtype String
-  cards TcGCard[]
+  cards   TcGCard[]
 }
 
 model TcGType {
-  id Int @id @default(autoincrement())
-  type String
+  id    Int       @id @default(autoincrement())
+  type  String
   cards TcGCard[]
 }
 
 model TcGCardSet {
-  id Int @id @default(autoincrement())
-  name String
-  cards TcGCard[]
-  player TcGPlayer @relation(fields: [playerID], references: [id])
+  id       Int       @id @default(autoincrement())
+  name     String
+  cards    TcGCard[]
+  player   TcGPlayer @relation(fields: [playerID], references: [id])
   playerID Int
 }
 
-model RPGWorld {
+model RPGChannel {
+  id           Int    @id @default(autoincrement())
+  channelID    String @unique
+  webhookId    String
+  webhookToken String
+}
+
+model RPGMessage {
   id Int @id @default(autoincrement())
-  channelID String @unique
-  name String
+  content String
+  username    String
+  displayName String
+  profilePicture  String
+  created_at DateTime @default(now())
+}
+
+model RPGWorld {
+  id          Int            @id @default(autoincrement())
+  name        String
   description String
-  cities RPGCity[]
-  players RPGCharacter[]
+  cities      RPGCity[]
+  players     RPGCharacter[]
 }
 
 model RPGCharacter {
-  id Int @id @default(autoincrement())
-  user BotUser @relation(fields: [userID], references: [id])
-  userID String
-  name String
+  id          Int       @id @default(autoincrement())
+  user        BotUser   @relation(fields: [userID], references: [id])
+  userID      String
+  name        String
   description String
-  health Int
-  maxHealth Int
-  xp Int
-  gold Int
-  world RPGWorld @relation(fields: [worldID], references: [id])
-  worldID Int
-  inventory RPGItem[]
+  health      Int
+  maxHealth   Int
+  xp          Int
+  gold        Int
+  world       RPGWorld  @relation(fields: [worldID], references: [id])
+  worldID     Int
+  inventory   RPGItem[]
 }
 
 model RPGItem {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int            @id @default(autoincrement())
+  name        String
   description String
-  damage Int
-  cost Int
-  owned RPGCharacter[]
+  damage      Int
+  cost        Int
+  owned       RPGCharacter[]
 }
 
 model RPGCity {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int      @id @default(autoincrement())
+  name        String
   description String
-  world RPGWorld @relation(fields: [worldID], references: [id])
-  worldID Int
-  npcs RPGNPC[]
+  world       RPGWorld @relation(fields: [worldID], references: [id])
+  worldID     Int
+  npcs        RPGNPC[]
 }
 
 model RPGNPC {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int     @id @default(autoincrement())
+  name        String
   description String
-  city RPGCity @relation(fields: [cityID], references: [id])
-  cityID Int
+  city        RPGCity @relation(fields: [cityID], references: [id])
+  cityID      Int
 }
 
 model RPGGoal {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int    @id @default(autoincrement())
+  name        String
   description String
+}
+
+model AIUsage {
+  id Int @id @default(autoincrement())
+  input String
+  output String
+  created DateTime @default(now())
 }
