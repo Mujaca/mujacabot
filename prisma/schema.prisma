@@ -191,6 +191,18 @@ model RPGGoal {
   description String
 }
 
+model RPGauthCode {
+  id Int @id @default(autoincrement())
+  code String
+  used Boolean @default(false)
+}
+
+model RPGSuperUSer {
+  id     Int    @id @default(autoincrement())
+  userID String
+  expires_at DateTime
+}
+
 model AIUsage {
   id      Int      @id @default(autoincrement())
   input   String   @db.LongText
