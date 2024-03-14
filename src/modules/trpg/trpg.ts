@@ -8,6 +8,7 @@ import dbManager from '../../manager/dbManager';
 import webhooks, { broadcast } from './manager/webhookManager';
 import { handleMessage } from './manager/npcManager';
 import { interaction } from '../../classes/interaction';
+import { event } from './manager/eventManager';
 
 export class TRPG extends Module {
 	constructor() {
@@ -26,7 +27,16 @@ export class TRPG extends Module {
 			.addStringOption(option => option.setName('type').setDescription('Valid: \'Character\', \'Item\', \'City\', \'NPC\'').setRequired(true))
 			.addStringOption(option => option.setName('name').setDescription('The Name of the thing you want to create').setRequired(true))
 			.addStringOption(option => option.setName('description').setDescription('The description of the thing you want to create').setRequired(true))
+			.addStringOption(option => option.setName('city').setDescription('The City the Character should live in.').setRequired(false))
         )
+
+		trpg.commandBuilder.addSubcommand(command =>
+			command.setName('generate')
+			.setDescription('Generate a Character, Item, City or NPC')
+			.addStringOption(option => option.setName('type').setDescription('Valid: \'Character\', \'Item\', \'City\', \'NPC\'').setRequired(true))
+			.addStringOption(option => option.setName('city').setDescription('The City the Character should live in.').setRequired(true))
+		)
+
 		trpg.commandBuilder.addSubcommand(command => 
 			command.setName('edit')
 			.setDescription('Edit a Character, Item, City or NPC')
@@ -38,7 +48,7 @@ export class TRPG extends Module {
 		trpg.commandBuilder.addSubcommand(command =>
 			command.setName('lookup')
 			.setDescription('Lookup a Character, Item, City, NPC or information about the current World')
-			.addStringOption(option => option.setName('type').setDescription('Valid: \'Character\', \'Item\', \'City\', \'NPC\', \'World\'').setRequired(true))
+			.addStringOption(option => option.setName('type').setDescription('Valid: \'Character\', \'Item\', \'City\', \'NPC\', \'World\', \'System\'').setRequired(true))
 			.addStringOption(option => option.setName('name').setDescription('The Name of the thing you want to lookup').setRequired(false))
 		)
 
@@ -92,6 +102,7 @@ export class TRPG extends Module {
 				},
 			},
 		});
+		event();
 
 		for (let channel of channels) {
 			webhooks.get(channel.channelID)?.send({
@@ -121,7 +132,10 @@ export class TRPG extends Module {
 		
 		switch (subcommand) {
 			case 'create':
-				
+
+			break;
+			case 'generate':
+
 			break;
 			case 'edit':
 

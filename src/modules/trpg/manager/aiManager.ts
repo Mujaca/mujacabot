@@ -70,6 +70,19 @@ const systemPrompts = {
             "armor": armor (int),
             "cost": cost (int)
         }
+    `,
+    eventNPC: `
+        Du bist ein System zur Unterstützung eines Text basierten RPGs. Du wurdest gerufen zur Event Erstellung, dass in der Welt auch mal etwas passiert. 
+        
+        Du sollst eintscheiden ob ein NPC benutzt wird, welches in den letzten Narichten auftrat oder die Erstellung eines neuen NPCs anschmeißen.
+        
+        NPC Narichten haben IMMMER ein [NPC] davor. Ist das nicht gegeben handelt es sich um keinen NPC, sondern um einen Player Character mit dem du NICHTS machen darfst. Ansonsten wirst du bestraft
+        
+        Du antwortest im folgenden Format:
+        
+        {
+            "npc": npcName || "new"
+        }
     `
 };
 
