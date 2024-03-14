@@ -7,9 +7,9 @@ import commandManager from '../../manager/commandManager';
 import dbManager from '../../manager/dbManager';
 import webhooks, { broadcast } from './manager/webhookManager';
 import { handleMessage } from './manager/npcManager';
-import { interaction } from '../../classes/interaction';
 import { event } from './manager/eventManager';
 import { handleInteraction } from './manager/consoleManager';
+import { lookupSystem } from './commands/lookup';
 
 export class TRPG extends Module {
 	constructor() {
@@ -34,7 +34,7 @@ export class TRPG extends Module {
 		trpg.commandBuilder.addSubcommand(command =>
 			command.setName('generate')
 			.setDescription('Generate a Character, Item, City or NPC')
-			.addStringOption(option => option.setName('type').setDescription('Valid: \'Character\', \'Item\', \'City\', \'NPC\'').setRequired(true))
+			.addStringOption(option => option.setName('type').setDescription('Valid: \'Item\', \'City\', \'NPC\'').setRequired(true))
 			.addStringOption(option => option.setName('city').setDescription('The City the Character should live in.').setRequired(true))
 		)
 
@@ -132,8 +132,16 @@ export class TRPG extends Module {
 		if(subcommand == 'console') return await handleInteraction(interaction);
 		const type = interaction.options.getString('type');
 
-		const command = `${subcommand}-${type}`
-		console.log(command)
+		const command = `${subcommand}-${type}`.toLowerCase();
+		const commandCallbacks = {
+			"lookup-system": lookupSystem,
+		}
 
+		if(commandCallbacks[command]) return await commandCallbacks[command](interaction);
+
+		return await interaction.reply({
+			content: 'An error occured',
+			ephemeral: true,
+		});
     }
 }
