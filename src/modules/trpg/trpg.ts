@@ -9,6 +9,7 @@ import webhooks, { broadcast } from './manager/webhookManager';
 import { handleMessage } from './manager/npcManager';
 import { interaction } from '../../classes/interaction';
 import { event } from './manager/eventManager';
+import { handleInteraction } from './manager/consoleManager';
 
 export class TRPG extends Module {
 	constructor() {
@@ -128,27 +129,11 @@ export class TRPG extends Module {
 
     async mainCommand(interaction: ChatInputCommandInteraction) {
 		const subcommand = interaction.options.getSubcommand();
+		if(subcommand == 'console') return await handleInteraction(interaction);
+		const type = interaction.options.getString('type');
 
-		
-		switch (subcommand) {
-			case 'create':
+		const command = `${subcommand}-${type}`
+		console.log(command)
 
-			break;
-			case 'generate':
-
-			break;
-			case 'edit':
-
-			break;
-			case 'lookup':
-
-			break;
-			case 'console':
-
-			break;
-			default:
-				interaction.reply({ ephemeral: true, content: 'An Error Occured!'});
-			break;
-		}
     }
 }
