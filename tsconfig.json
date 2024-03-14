@@ -6,7 +6,9 @@
         "noImplicitAny": false,
         "removeComments": true,
         "preserveConstEnums": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "resolveJsonModule": true,
+        "rootDir": "./src",
     },
     "include": [
         "src/**/*"

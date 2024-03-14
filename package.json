@@ -6,7 +6,8 @@
   "scripts": {
     "compile": "tsc",
     "start": "npm run compile && node dist/index.js",
-    "dev": "tsc -w & nodemon dist/index.js"
+    "dev": "tsc -w & nodemon dist/index.js",
+    "watch": "tsc -w"
   },
   "repository": {
     "type": "git",
