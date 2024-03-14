@@ -10,6 +10,8 @@ import { handleMessage } from './manager/npcManager';
 import { event } from './manager/eventManager';
 import { handleInteraction } from './manager/consoleManager';
 import { lookupSystem } from './commands/lookup';
+import { getCharacter } from './manager/playerManager';
+import { createPlayer } from './commands/create';
 
 export class TRPG extends Module {
 	constructor() {
@@ -87,6 +89,12 @@ export class TRPG extends Module {
 		});
 		if (!channel) return;
 
+		const character = await getCharacter(message.author.id);
+		if (!character || character.dead) {
+			await message.delete();
+			return;
+		}
+
         await dbManager.db.rPGMessage.create({
             data: {
                 content: message.content,
@@ -132,12 +140,17 @@ export class TRPG extends Module {
 		if(subcommand == 'console') return await handleInteraction(interaction);
 		const type = interaction.options.getString('type');
 
+		const name = interaction.options.getString('name');
+		const description = interaction.options.getString('description');
+		const city = interaction.options.getString('city');
+
 		const command = `${subcommand}-${type}`.toLowerCase();
 		const commandCallbacks = {
+			"create-character": createPlayer,
 			"lookup-system": lookupSystem,
 		}
 
-		if(commandCallbacks[command]) return await commandCallbacks[command](interaction);
+		if(commandCallbacks[command]) return await commandCallbacks[command](interaction, name, description, city, interaction.user.id);
 
 		return await interaction.reply({
 			content: 'An error occured',

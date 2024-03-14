@@ -126,12 +126,12 @@ model RPGChannel {
 }
 
 model RPGMessage {
-  id Int @id @default(autoincrement())
-  content String @db.LongText
-  username    String
-  displayName String
-  profilePicture  String
-  created_at DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  content        String   @db.LongText
+  username       String
+  displayName    String
+  profilePicture String
+  created_at     DateTime @default(now())
 }
 
 model RPGWorld {
@@ -140,6 +140,7 @@ model RPGWorld {
   description String
   cities      RPGCity[]
   players     RPGCharacter[]
+  current     Boolean        @default(false)
 }
 
 model RPGCharacter {
@@ -148,12 +149,13 @@ model RPGCharacter {
   userID      String
   name        String
   description String
-  health      Int
-  maxHealth   Int
-  xp          Int
-  gold        Int
+  health      Int       @default(10)
+  maxHealth   Int       @default(10)
+  xp          Int       @default(0)
+  gold        Int       @default(0)
   world       RPGWorld  @relation(fields: [worldID], references: [id])
   worldID     Int
+  dead        Boolean   @default(false)
   inventory   RPGItem[]
 }
 
@@ -190,8 +192,8 @@ model RPGGoal {
 }
 
 model AIUsage {
-  id Int @id @default(autoincrement())
-  input String @db.LongText
-  output String @db.LongText
+  id      Int      @id @default(autoincrement())
+  input   String   @db.LongText
+  output  String   @db.LongText
   created DateTime @default(now())
 }
