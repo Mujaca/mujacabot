@@ -18,3 +18,9 @@ export async function getCharacter(userId: string): Promise<RPGCharacter | null>
     if (character) cache.set(characterCacheId, character);
     return character;
 }
+
+export async function removeFromCache(userId: string) {
+    const currentWorld = await findCurrentWorld();
+    const characterCacheId = `${userId}-${currentWorld?.id || 0}`;
+    cache.delete(characterCacheId);
+}
