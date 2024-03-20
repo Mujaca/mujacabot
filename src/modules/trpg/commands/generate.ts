@@ -89,6 +89,7 @@ export async function generateItem(interaction: ChatInputCommandInteraction, cha
                 cost: item.cost,
                 damage: item.damage,
                 armor: item.armor,
+                worldID: currentWorld.id
             }
         });
 

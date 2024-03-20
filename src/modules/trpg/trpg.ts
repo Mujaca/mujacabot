@@ -9,7 +9,7 @@ import webhooks, { broadcast } from './manager/webhookManager';
 import { handleMessage } from './manager/npcManager';
 import { event } from './manager/eventManager';
 import { handleInteraction } from './manager/consoleManager';
-import { lookupSystem } from './commands/lookup';
+import { lookupCharacter, lookupCity, lookupItem, lookupNPC, lookupSystem, lookupWorld } from './commands/lookup';
 import { getCharacter } from './manager/playerManager';
 import { createPlayer } from './commands/create';
 import { generateCity, generateItem, generateNPC } from './commands/generate';
@@ -152,6 +152,11 @@ export class TRPG extends Module {
 			"generate-npc": generateNPC,
 			"generate-city": generateCity,
 			"generate-item": generateItem,
+			"lookup-world": lookupWorld,
+			"lookup-city": lookupCity,
+			"lookup-npc": lookupNPC,
+			"lookup-item": lookupItem,
+			"lookup-character": lookupCharacter,
 		}
 
 		if(commandCallbacks[command]) return await commandCallbacks[command](interaction, name, description, city, interaction.user.id);

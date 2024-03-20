@@ -141,6 +141,7 @@ model RPGWorld {
   genre       String
   cities      RPGCity[]
   players     RPGCharacter[]
+  items       RPGItem[]
   current     Boolean        @default(false)
 }
 
@@ -168,6 +169,8 @@ model RPGItem {
   cost        Int
   armor       Int
   owned       RPGCharacter[]
+  world       RPGWorld       @relation(fields: [worldID], references: [id])
+  worldID     Int
 }
 
 model RPGCity {

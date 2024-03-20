@@ -1,5 +1,7 @@
 import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import { version } from '../../../../package.json';
+import { findCurrentWorld } from '../manager/worldManager';
+import dbManager from '../../../manager/dbManager';
 
 export async function lookupSystem(interaction: CommandInteraction) {
 	const embed = new EmbedBuilder();
@@ -24,4 +26,151 @@ export async function lookupSystem(interaction: CommandInteraction) {
 	});
 
 	interaction.reply({ embeds: [embed] });
+}
+
+export async function lookupWorld(interaction: CommandInteraction) {
+	const currentWorld = await findCurrentWorld();
+	if(!currentWorld) return interaction.reply({ content: 'No world found', ephemeral: true });
+
+	const worldInformation = await dbManager.db.rPGWorld.findUnique({
+		where: {
+			id: currentWorld.id,
+		},
+		include: {
+			cities: {
+				include: {
+					npcs: true,
+				}
+			},
+		},
+	});
+
+	const embed = new EmbedBuilder();
+	embed.setTitle(currentWorld.name);
+	embed.setColor('Green');
+	embed.setDescription(currentWorld.description);
+	embed.setAuthor({
+		name: 'Gaia',
+		iconURL: 'https://as1.ftcdn.net/v2/jpg/02/79/04/26/1000_F_279042657_Q222qQOH4BaKzzdTtCP8g5nj6G8AzbDG.jpg',
+	});
+	embed.addFields([
+		{ name: 'Cities', value: worldInformation.cities.map(city => city.name).join('\n'), inline: true },
+		{ name: 'NPCs', value: worldInformation.cities.map(city => city.npcs.map(npc => npc.name).join('\n')).join('\n'), inline: true },
+
+	])
+
+	interaction.reply({ embeds: [embed] });
+}
+
+export async function lookupCity(interaction: CommandInteraction, name: string) {
+	const currentWorld = await findCurrentWorld();
+	if(!currentWorld) return interaction.reply({ content: 'No world found', ephemeral: true });
+
+	const city = await dbManager.db.rPGCity.findFirst({
+		where: {
+			worldID: currentWorld.id,
+			name: name,
+		},
+		include: {
+			npcs: true,
+		},
+	});
+
+	if(!city) return interaction.reply({ content: 'City not found', ephemeral: true });
+
+	const embed = new EmbedBuilder();
+	embed.setTitle(city.name);
+	embed.setColor('Green');
+	embed.setDescription(city.description);
+	embed.setAuthor({
+		name: 'Gaia',
+		iconURL: 'https://as1.ftcdn.net/v2/jpg/02/79/04/26/1000_F_279042657_Q222qQOH4BaKzzdTtCP8g5nj6G8AzbDG.jpg',
+	});
+	if(city.npcs.length > 0) embed.addFields([
+		{ name: 'NPCs', value: city.npcs.map(npc => npc.name).join('\n'), inline: true },
+	])
+
+	interaction.reply({ embeds: [embed] });
+}
+
+export async function lookupNPC(interaction: CommandInteraction, name: string) {
+	const currentWorld = await findCurrentWorld();
+	if(!currentWorld) return interaction.reply({ content: 'No world found', ephemeral: true });
+
+	const npc = await dbManager.db.rPGNPC.findFirst({
+		where: {
+			city: {
+				worldID: currentWorld.id,
+			},
+			name: name,
+		},
+	});
+
+	if(!npc) return interaction.reply({ content: 'NPC not found', ephemeral: true });
+
+	const embed = new EmbedBuilder();
+	embed.setTitle(npc.name);
+	embed.setColor('Green');
+	embed.setDescription(npc.description);
+	embed.setAuthor({
+		name: 'Gaia',
+		iconURL: 'https://as1.ftcdn.net/v2/jpg/02/79/04/26/1000_F_279042657_Q222qQOH4BaKzzdTtCP8g5nj6G8AzbDG.jpg',
+	});
+
+	interaction.reply({ embeds: [embed] });
+}
+
+export async function lookupItem(interaction: CommandInteraction, name: string) {
+	const currentWorld = await findCurrentWorld();
+	if(!currentWorld) return interaction.reply({ content: 'No world found', ephemeral: true });
+
+	const item = await dbManager.db.rPGItem.findFirst({
+		where: {
+			name: name,
+		},
+	});
+
+	if(!item) return interaction.reply({ content: 'Item not found', ephemeral: true });
+
+	const embed = new EmbedBuilder();
+	embed.setTitle(item.name);
+	embed.setColor('Green');
+	embed.setDescription(item.description);
+	embed.setAuthor({
+		name: 'Gaia',
+		iconURL: 'https://as1.ftcdn.net/v2/jpg/02/79/04/26/1000_F_279042657_Q222qQOH4BaKzzdTtCP8g5nj6G8AzbDG.jpg',
+	});
+	embed.addFields([
+		{ name: 'Kosten', value: item.cost.toString(), inline: true },
+		{ name: 'Schaden', value: item.damage.toString(), inline: true },
+		{ name: 'Rüstung', value: item.armor.toString(), inline: true },
+	]);
+
+	interaction.reply({ embeds: [embed] });
+}
+
+export async function lookupCharacter(interaction: CommandInteraction, name: string) {
+	const currentWorld = await findCurrentWorld();
+	if(!currentWorld) return interaction.reply({ content: 'No world found', ephemeral: true });
+
+	const character = await dbManager.db.rPGCharacter.findFirst({
+		where: {
+			worldID: currentWorld.id,
+			name: name,
+		},
+	});
+
+	if(!character) return interaction.reply({ content: 'Character not found', ephemeral: true });
+
+	const embed = new EmbedBuilder();
+	embed.setTitle(character.name);
+	embed.setColor('Green');
+	embed.setDescription(character.description);
+	embed.setAuthor({
+		name: 'Gaia',
+		iconURL: 'https://as1.ftcdn.net/v2/jpg/02/79/04/26/1000_F_279042657_Q222qQOH4BaKzzdTtCP8g5nj6G8AzbDG.jpg',
+	});
+
+	interaction.reply({ embeds: [embed] });
+	
 }
