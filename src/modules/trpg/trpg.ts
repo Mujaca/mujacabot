@@ -11,7 +11,7 @@ import { event } from './manager/eventManager';
 import { handleInteraction } from './manager/consoleManager';
 import { lookupCharacter, lookupCity, lookupItem, lookupNPC, lookupSystem, lookupWorld } from './commands/lookup';
 import { getCharacter } from './manager/playerManager';
-import { createPlayer } from './commands/create';
+import { createCity, createItem, createNPC, createPlayer } from './commands/create';
 import { generateCity, generateItem, generateNPC } from './commands/generate';
 
 export class TRPG extends Module {
@@ -29,10 +29,13 @@ export class TRPG extends Module {
             command.setName('create')
             .setDescription('Create a Character, Item, City or NPC')
 			.addStringOption(option => option.setName('type').setDescription('Valid: \'Character\', \'Item\', \'City\', \'NPC\'').setRequired(true))
-			.addStringOption(option => option.setName('name').setDescription('The Name of the thing you want to create').setRequired(true))
+			.addStringOption(option => option.setName('name').setDescription('The name of the thing you want to create').setRequired(true))
 			.addStringOption(option => option.setName('description').setDescription('The description of the thing you want to create').setRequired(true))
-			.addStringOption(option => option.setName('city').setDescription('The City the Character should live in.').setRequired(false))
-        )
+			.addStringOption(option => option.setName('city').setDescription('The city the character should live in.').setRequired(false))
+			.addIntegerOption(option => option.setName('cost').setDescription('The cost of the item').setRequired(false))
+			.addIntegerOption(option => option.setName('damage').setDescription('The damage of the item').setRequired(false))
+			.addIntegerOption(option => option.setName('armor').setDescription('The armor of the item').setRequired(false))
+		)
 
 		trpg.commandBuilder.addSubcommand(command =>
 			command.setName('generate')
@@ -157,6 +160,9 @@ export class TRPG extends Module {
 			"lookup-npc": lookupNPC,
 			"lookup-item": lookupItem,
 			"lookup-character": lookupCharacter,
+			"create-city": createCity,
+			"create-NPC": createNPC,
+			"create-item": createItem,
 		}
 
 		if(commandCallbacks[command]) return await commandCallbacks[command](interaction, name, description, city, interaction.user.id);
