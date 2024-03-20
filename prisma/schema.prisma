@@ -182,6 +182,7 @@ model RPGNPC {
   id          Int     @id @default(autoincrement())
   name        String
   description String
+  dead        Boolean @default(false)
   city        RPGCity @relation(fields: [cityID], references: [id])
   cityID      Int
 }

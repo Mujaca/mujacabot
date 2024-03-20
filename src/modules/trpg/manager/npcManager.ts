@@ -5,18 +5,11 @@ import { ChatCompletionMessageParam } from "openai/resources";
 
 const cache:Map<string, RPGNPC> = new Map();
 
-cache.set("Liora", {
-    cityID: 0,
-    description: "In der malerischen Stadt Eldoria, bekannt für ihre üppigen Gärten, verwinkelten Pfade und die reichen Traditionen der Magie, lebt Liora Weisenblatt, eine freundliche Dame, die etwas abseits des geschäftigen Treibens der Stadt ihr Zuhause hat. Liora bewohnt ein kleines, aber gemütliches Haus am Rande des Elysischen Waldes, dessen Tür stets für Reisende und Stadtbewohner offensteht. Als hervorragende Kräuterkundlerin und Tränkemeisterin besitzt Liora ein umfangreiches Wissen über die Flora und Fauna der Region. Sie verbringt ihre Tage damit, seltene Kräuter zu sammeln, heilende Tränke zu brauen und sich um die Tiere des Waldes zu kümmern. Liora ist bei allen beliebt und bekannt für ihre unermüdliche Gastfreundschaft, ihre warmherzige Ausstrahlung und ihre Bereitschaft, denen in Not mit Rat und Tat zur Seite zu stehen. Ihr Haus dient als Zuflucht für diejenigen, die eine Pause von ihren Reisen oder den Wirren des Lebens suchen, und ihre Küche duftet stets nach frisch gebackenem Brot und Kräutertees. Trotz ihrer zurückgezogenen Lebensweise ist Liora eine unverzichtbare Stütze Eldorias, deren Weisheit und Güte die Herzen der Menschen erobert haben.",
-    name: "Liora Weisenblatt",
-    id: 0
-})
-
 export async function handleMessage(message:string) {
     if(!message.includes("@")) return null;
 
     const npc = await findNPC(message);
-    if(!npc) return null;
+    if(!npc || npc.dead) return null;
 
     try {
 
@@ -42,6 +35,19 @@ export async function handleMessage(message:string) {
         const answerString = await generate('dialog', mapped)
         const answer = JSON.parse(answerString);
         answer.npc = npc;
+
+        if(answer.dead) {
+            await databaseManager.db.rPGNPC.update({
+                where: {
+                    id: npc.id
+                },
+                data: {
+                    dead: true
+                }
+            });
+
+            cache.delete(npc.name);
+        }
 
         return answer;
 
