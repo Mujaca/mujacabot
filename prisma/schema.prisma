@@ -137,7 +137,7 @@ model RPGMessage {
 model RPGWorld {
   id          Int            @id @default(autoincrement())
   name        String
-  description String       @db.LongText
+  description String         @db.LongText
   genre       String
   cities      RPGCity[]
   players     RPGCharacter[]
@@ -172,7 +172,7 @@ model RPGItem {
 model RPGCity {
   id          Int      @id @default(autoincrement())
   name        String
-  description String
+  description String   @db.LongText
   world       RPGWorld @relation(fields: [worldID], references: [id])
   worldID     Int
   npcs        RPGNPC[]
@@ -181,7 +181,7 @@ model RPGCity {
 model RPGNPC {
   id          Int     @id @default(autoincrement())
   name        String
-  description String
+  description String  @db.LongText
   dead        Boolean @default(false)
   city        RPGCity @relation(fields: [cityID], references: [id])
   cityID      Int
