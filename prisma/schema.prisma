@@ -137,7 +137,8 @@ model RPGMessage {
 model RPGWorld {
   id          Int            @id @default(autoincrement())
   name        String
-  description String
+  description String       @db.LongText
+  genre       String
   cities      RPGCity[]
   players     RPGCharacter[]
   current     Boolean        @default(false)
@@ -192,14 +193,14 @@ model RPGGoal {
 }
 
 model RPGauthCode {
-  id Int @id @default(autoincrement())
+  id   Int     @id @default(autoincrement())
   code String
   used Boolean @default(false)
 }
 
 model RPGSuperUSer {
-  id     Int    @id @default(autoincrement())
-  userID String
+  id         Int      @id @default(autoincrement())
+  userID     String
   expires_at DateTime
 }
 

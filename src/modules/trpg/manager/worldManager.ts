@@ -3,14 +3,14 @@ import dbManager from "../../../manager/dbManager";
 
 let currentWorld: RPGWorld | null = null;
 
-export async function findCurrentWorld():Promise<RPGWorld>{
+export async function findCurrentWorld(): Promise<RPGWorld> {
     if (currentWorld != null) return currentWorld;
     const world = await dbManager.db.rPGWorld.findFirst({
         where: {
             current: true,
         },
     });
-    
+
     currentWorld = world;
     return world;
 }
@@ -35,4 +35,17 @@ export async function setCurrentWorld(world: RPGWorld) {
             current: true,
         },
     });
+}
+
+export async function disableCurrentWorld() {
+    if (!currentWorld) return;
+    await dbManager.db.rPGWorld.update({
+        where: {
+            id: currentWorld.id,
+        },
+        data: {
+            current: false,
+        },
+    });
+    currentWorld = null;
 }

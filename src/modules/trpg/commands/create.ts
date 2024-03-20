@@ -9,7 +9,7 @@ export async function createPlayer(interaction: ChatInputCommandInteraction, cha
 
     const discrodUser = botManager.client.users.cache.get(userId);
 
-    /**const botUser = await dbManager.db.botUser.upsert({
+    const botUser = await dbManager.db.botUser.upsert({
         where: {
             id: userId,
         },
@@ -18,7 +18,7 @@ export async function createPlayer(interaction: ChatInputCommandInteraction, cha
             id: userId,
             name: discrodUser?.username,
         },
-    })**/
+    })
 
     await dbManager.db.rPGCharacter.create({
         data: {

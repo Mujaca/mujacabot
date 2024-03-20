@@ -1,5 +1,12 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import dbManager from "../../../manager/dbManager";
+import { generate } from "./aiManager";
+import { disableCurrentWorld, setCurrentWorld } from "./worldManager";
+import { broadcast, systemMessage } from "./webhookManager";
+
+const consoleCommands = {
+    createWorld
+}
 
 export async function handleInteraction(interaction: ChatInputCommandInteraction) {
     const command = interaction.options.getString('command');
@@ -29,7 +36,8 @@ export async function handleInteraction(interaction: ChatInputCommandInteraction
         return;
     }
 
-
+    const callback = consoleCommands[command];
+    await callback(args, interaction);
 }
 
 export async function checkAuthCode(authCode:string) {
@@ -50,4 +58,42 @@ export async function checkAuthCode(authCode:string) {
     });
 
     return validCode !== null;
+}
+
+export async function createWorld(args:string, interaction: ChatInputCommandInteraction) {
+    const reply = await interaction.deferReply({ephemeral: true});
+    const worldString = await generate('world', [
+        { role: 'user', content: args }
+    ])
+    try {
+        const world = JSON.parse(worldString);
+        reply.edit({content: `Creating world: ${world.name}`});
+        const dbworld = await dbManager.db.rPGWorld.create({
+            data: {
+                name: world.name,
+                description: world.description,
+                genre: args
+            }
+        });
+
+        setTimeout(() => { systemMessage("Shutdown initiated") }, 1000 * 1);
+        setTimeout(() => { systemMessage("Shutting down world system ...") }, 1000 * 5);
+        setTimeout(() => { disableCurrentWorld() }, 1000 * 5);
+        setTimeout(() => { systemMessage("Rebooting system for new world ...") }, 1000 * 10);
+        setTimeout(() => { systemMessage("Generating new World ...") }, 1000 * 15);
+        setTimeout(() => { systemMessage("Generating Terrain ...") }, 1000 * 20);
+        setTimeout(() => { systemMessage("Preparing Citys ...") }, 1000 * 25);
+        setTimeout(() => { systemMessage("Generating NPCs ...") }, 1000 * 30);
+        setTimeout(() => { systemMessage("Setting Up Player Hook ...") }, 1000 * 40);
+        setTimeout(() => { systemMessage("Changing Language to \"German\" ...") }, 1000 * 35);
+        setTimeout(() => { systemMessage("Activating new World ...") }, 1000 * 45);
+        setTimeout(async () => { await setCurrentWorld(dbworld); }, 1000 * 45);
+        setTimeout(() => { systemMessage(`Herzlich Wilkommen in ${dbworld.name}.\n${dbworld.description}`) }, 1000 * 50);
+
+        return true;
+    } catch (error) {
+        console.log(error);
+        reply.edit({content: `Error creating new World. Please try again later!`});
+        return false;    
+    }
 }
