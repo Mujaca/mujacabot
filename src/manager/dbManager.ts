@@ -11,11 +11,11 @@ export async function connectDatabase(){
 }
 
 async function backUpDatabase(){
-    if(!fs.existsSync('./backup/')) fs.mkdirSync('./backup/');
+    if(!fs.existsSync('./db_backup/')) fs.mkdirSync('./db_backup/');
     const keys = Object.keys(prisma).filter(key => !key.startsWith('_') && !key.startsWith('$'));
     for(let key of keys){
         const data = await prisma[key].findMany();
-        fs.writeFileSync(`./backup/${key}.json`, JSON.stringify(data));
+        fs.writeFileSync(`./db_backup/${key}.json`, JSON.stringify(data));
     }
 }
 

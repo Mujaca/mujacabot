@@ -2,4 +2,4 @@ node_modules/
 dist/
 .env
 prisma/migrations/
-backup/
+db_backup/
