@@ -12,6 +12,7 @@ import { handleInteraction } from './manager/consoleManager';
 import { lookupSystem } from './commands/lookup';
 import { getCharacter } from './manager/playerManager';
 import { createPlayer } from './commands/create';
+import { generateCity, generateItem, generateNPC } from './commands/generate';
 
 export class TRPG extends Module {
 	constructor() {
@@ -37,7 +38,7 @@ export class TRPG extends Module {
 			command.setName('generate')
 			.setDescription('Generate a Character, Item, City or NPC')
 			.addStringOption(option => option.setName('type').setDescription('Valid: \'Item\', \'City\', \'NPC\'').setRequired(true))
-			.addStringOption(option => option.setName('city').setDescription('The City the Character should live in.').setRequired(true))
+			.addStringOption(option => option.setName('city').setDescription('The City the Character should live in.').setRequired(false))
 		)
 
 		trpg.commandBuilder.addSubcommand(command => 
@@ -148,6 +149,9 @@ export class TRPG extends Module {
 		const commandCallbacks = {
 			"create-character": createPlayer,
 			"lookup-system": lookupSystem,
+			"generate-npc": generateNPC,
+			"generate-city": generateCity,
+			"generate-item": generateItem,
 		}
 
 		if(commandCallbacks[command]) return await commandCallbacks[command](interaction, name, description, city, interaction.user.id);

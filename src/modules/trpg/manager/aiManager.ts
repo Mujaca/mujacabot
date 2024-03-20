@@ -61,7 +61,7 @@ const systemPrompts = {
         }
     `,
     item: `
-        Du bist Gott. Du erstellst für die Welt "Verdantia" im Genre "Fantasy" ein Item. Items die du erstellst müssen entweder ein damage oder ein armor wert haben. 
+        Du bist Gott. Du erstellst für die Welt "([world])" im Genre "([genre])" ein Item. Items die du erstellst müssen entweder ein damage oder ein armor wert haben. 
         Du antwortest im folgenden Format : 
         {
             "name": name,
@@ -111,5 +111,8 @@ export async function generate(type: keyof typeof systemPrompts, inputArr: ChatC
 		},
 	});
 
+    response.choices[0].message.content = response.choices[0].message.content.replaceAll('\n', ' ')
+    response.choices[0].message.content = response.choices[0].message.content.replaceAll('```json', '')
+    response.choices[0].message.content = response.choices[0].message.content.replaceAll('```', '')
 	return response.choices[0].message.content;
 }
