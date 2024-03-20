@@ -92,12 +92,15 @@ export async function generate(type: keyof typeof systemPrompts, inputArr: ChatC
 		system = system.replaceAll(`([${key}])`, toReplace[key]);
 	}
 
+    system += "Du wirst IMMER in Deutsch antworten"
+
 	const input:ChatCompletionMessageParam[] = [{ role: 'system', content: systemPrompts[type] }, ...inputArr];
 
 	const response = await openai.chat.completions.create({
 		messages: input,
-		model: 'gpt-3.5-turbo',
-		temperature: 1.5,
+		model: 'gpt-4-turbo-preview',
+		temperature: 0.8,
+        frequency_penalty: 1.5,
 		max_tokens: 1024,
 	});
 
