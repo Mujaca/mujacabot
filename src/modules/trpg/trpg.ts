@@ -99,7 +99,7 @@ export class TRPG extends Module {
         await dbManager.db.rPGMessage.create({
             data: {
                 content: message.content,
-                username: message.author.username,
+                username: character.name,
                 displayName: message.author.displayName,
                 profilePicture: message.author.avatarURL(),
             }
@@ -117,7 +117,7 @@ export class TRPG extends Module {
 		for (let channel of channels) {
 			webhooks.get(channel.channelID)?.send({
 				content: message.content,
-				username: message.author.displayName,
+				username: character.name,
 				avatarURL: message.author.avatarURL(),
 			});
 		}
