@@ -84,7 +84,7 @@ export async function addttrpgchannel(interaction: ChatInputCommandInteraction) 
 	for (let message of messages) {
 		await webhook.send({
 			content: message.content,
-			username: message.username,
+			username: message.displayName,
 			avatarURL: message.profilePicture,
 		});
 	}
