@@ -3,6 +3,7 @@ import dbManager from "../../../manager/dbManager";
 
 let currentWorld: RPGWorld | null = null;
 
+findCurrentWorld();
 export async function findCurrentWorld(): Promise<RPGWorld> {
     if (currentWorld != null) return currentWorld;
     const world = await dbManager.db.rPGWorld.findFirst({
