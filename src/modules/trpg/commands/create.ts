@@ -30,7 +30,9 @@ export async function createPlayer(interaction: ChatInputCommandInteraction, cha
             health: 10,
             maxHealth: 10,
             xp: 0,
-            worldID: currentWorld.id,
+            worldID: currentWorld.id
         }
     });
+
+    interaction.reply({content: "Character created", ephemeral: true});
 }
