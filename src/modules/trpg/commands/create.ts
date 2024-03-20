@@ -20,6 +20,15 @@ export async function createPlayer(interaction: ChatInputCommandInteraction, cha
         },
     })
 
+    const checkCharacter = await dbManager.db.rPGCharacter.findFirst({
+        where: {
+            userID: userId,
+            worldID: currentWorld.id
+        }
+    });
+
+    if(checkCharacter) return interaction.reply({content: "Character already exists", ephemeral: true});
+
     await dbManager.db.rPGCharacter.create({
         data: {
             userID: userId,
