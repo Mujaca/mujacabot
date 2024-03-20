@@ -76,6 +76,19 @@ export async function createWorld(args:string, interaction: ChatInputCommandInte
             }
         });
 
+        const city = await generate('city', [
+            { role: 'user', content: dbworld.description }
+        ], {world: dbworld.name, genre: dbworld.genre});
+        const cityData = JSON.parse(city);
+        console.log(cityData.description.length);
+        await dbManager.db.rPGCity.create({
+            data: {
+                name: cityData.name,
+                description: cityData.description,
+                worldID: dbworld.id
+            }
+        });
+
         setTimeout(() => { systemMessage("Shutdown initiated") }, 1000 * 1);
         setTimeout(() => { systemMessage("Shutting down world system ...") }, 1000 * 5);
         setTimeout(() => { disableCurrentWorld() }, 1000 * 5);
@@ -85,14 +98,15 @@ export async function createWorld(args:string, interaction: ChatInputCommandInte
         setTimeout(() => { systemMessage("Preparing Citys ...") }, 1000 * 25);
         setTimeout(() => { systemMessage("Generating NPCs ...") }, 1000 * 30);
         setTimeout(() => { systemMessage("Setting Up Player Hook ...") }, 1000 * 40);
-        setTimeout(() => { systemMessage("Changing Language to \"German\" ...") }, 1000 * 35);
-        setTimeout(() => { systemMessage("Activating new World ...") }, 1000 * 45);
-        setTimeout(async () => { await setCurrentWorld(dbworld); }, 1000 * 45);
+        setTimeout(() => { systemMessage("Changing Language to \"German\" ...") }, 1000 * 45);
+        setTimeout(() => { systemMessage("Activating new World ...") }, 1000 * 35);
+        setTimeout(async () => { await setCurrentWorld(dbworld); }, 1000 * 35);
         setTimeout(() => { systemMessage(`Herzlich Wilkommen in ${dbworld.name}.\n${dbworld.description}`) }, 1000 * 50);
+        setTimeout(() => { systemMessage(`Ihr befindet euch in in ${cityData.name}.\n${cityData.description}`) }, 1000 * 55);
 
         return true;
     } catch (error) {
-        console.log(error);
+        console.log(error, worldString);
         reply.edit({content: `Error creating new World. Please try again later!`});
         return false;    
     }

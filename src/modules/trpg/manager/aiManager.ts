@@ -99,9 +99,9 @@ export async function generate(type: keyof typeof systemPrompts, inputArr: ChatC
 	const response = await openai.chat.completions.create({
 		messages: input,
 		model: 'gpt-4-turbo-preview',
-		temperature: 0.8,
-        frequency_penalty: 1.5,
-		max_tokens: 1024,
+		temperature: 0.7,
+        frequency_penalty: 1.1,
+		max_tokens: 4096,
 	});
 
 	databaseManager.db.aIUsage.create({
