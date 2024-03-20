@@ -62,4 +62,15 @@ export async function addttrpgchannel(interaction: ChatInputCommandInteraction) 
 		embeds: [embed],
 	});
 	await webhookMessage.pin();
+
+	const messages = await dbManager.db.rPGMessage.findMany({
+		take: 100,
+	});
+	for (let message of messages) {
+		await webhook.send({
+			content: message.content,
+			username: message.username,
+			avatarURL: message.profilePicture,
+		});
+	}
 }
