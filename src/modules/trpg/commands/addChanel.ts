@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, TextChannel } from 'discord.
 import botManager from '../../../manager/botManager';
 import dbManager from '../../../manager/dbManager';
 import webhooks from '../manager/webhookManager';
+import { findCurrentWorld } from '../manager/worldManager';
 
 export async function addttrpgchannel(interaction: ChatInputCommandInteraction) {
 	const channelID = interaction.options.getChannel('channel').id;
@@ -62,6 +63,20 @@ export async function addttrpgchannel(interaction: ChatInputCommandInteraction) 
 		embeds: [embed],
 	});
 	await webhookMessage.pin();
+
+	const world = await findCurrentWorld();
+	if (world) {
+		const worldEmbed = new EmbedBuilder();
+		worldEmbed.setTitle(world.name);
+		worldEmbed.setDescription(world.description);
+		worldEmbed.setColor('Orange')
+
+		const webhookMessage = await webhook.send({
+			username: 'Gaia',
+			avatarURL: 'https://as1.ftcdn.net/v2/jpg/02/79/04/26/1000_F_279042657_Q222qQOH4BaKzzdTtCP8g5nj6G8AzbDG.jpg',
+			embeds: [worldEmbed],
+		});
+	}
 
 	const messages = await dbManager.db.rPGMessage.findMany({
 		take: 100,
