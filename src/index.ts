@@ -26,7 +26,7 @@ moduleManager.registerModule("LewdOrNsFW", new LewdOrNsFW());
 //moduleManager.registerModule("TCG", new TCG());
 moduleManager.registerModule('PaP', new PaP());
 moduleManager.registerModule('trpg', new TRPG());
-moduleManager.registerModule('Wolvesville', new wolvesville());
+//moduleManager.registerModule('Wolvesville', new wolvesville());
 
 //Register Commands outside of modules
 /**const remindmeCommand = new command("remindme", "Erstellt eine Erinnerung", remindMe);
