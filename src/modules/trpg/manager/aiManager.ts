@@ -99,7 +99,7 @@ export async function generate(type: keyof typeof systemPrompts, inputArr: ChatC
 	const response = await openai.chat.completions.create({
 		messages: input,
 		model: 'gpt-4-turbo-preview',
-		temperature: 0.7,
+		temperature: 0.6,
         frequency_penalty: 1.1,
 		max_tokens: 4096,
 	});

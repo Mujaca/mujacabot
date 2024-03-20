@@ -101,8 +101,8 @@ export async function createWorld(args:string, interaction: ChatInputCommandInte
         setTimeout(() => { systemMessage("Changing Language to \"German\" ...") }, 1000 * 45);
         setTimeout(() => { systemMessage("Activating new World ...") }, 1000 * 35);
         setTimeout(async () => { await setCurrentWorld(dbworld); }, 1000 * 35);
-        setTimeout(() => { systemMessage(`Herzlich Wilkommen in ${dbworld.name}.\n${dbworld.description}`) }, 1000 * 50);
-        setTimeout(() => { systemMessage(`Ihr befindet euch in in ${cityData.name}.\n${cityData.description}`) }, 1000 * 55);
+        setTimeout(() => { systemMessage(`Herzlich Wilkommen in ${dbworld.name}:\n${dbworld.description}`) }, 1000 * 50);
+        setTimeout(() => { systemMessage(`Ihr befindet euch in in ${cityData.name}:\n${cityData.description}`) }, 1000 * 55);
 
         return true;
     } catch (error) {

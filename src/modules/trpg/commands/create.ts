@@ -43,5 +43,6 @@ export async function createPlayer(interaction: ChatInputCommandInteraction, cha
         }
     });
 
-    interaction.reply({content: "Character created", ephemeral: true});
+    await interaction.reply({content: "Character created", ephemeral: true});
+    //TODO add DM Messages
 }
