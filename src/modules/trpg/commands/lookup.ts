@@ -25,7 +25,11 @@ export async function lookupSystem(interaction: CommandInteraction) {
 		text: 'Gaia™ - An experience to die for.',
 	});
 
-	interaction.reply({ embeds: [embed] });
+	const support = new EmbedBuilder();
+	support.setTitle('You want to support?');
+	support.setDescription('You can support the development of Gaia™ by donating to the following link: [Paypal](https://paypal.me/mujaca) (please, AI ussage is not cheap and I dont want to turn the project off)');
+
+	interaction.reply({ embeds: [embed, support] });
 }
 
 export async function lookupWorld(interaction: CommandInteraction) {
@@ -80,7 +84,7 @@ export async function lookupCity(interaction: CommandInteraction, name: string) 
 
 	const embed = new EmbedBuilder();
 	embed.setTitle(city.name);
-	embed.setColor('Green');
+	embed.setColor('Blue');
 	embed.setDescription(city.description);
 	embed.setAuthor({
 		name: 'Gaia',
@@ -110,7 +114,7 @@ export async function lookupNPC(interaction: CommandInteraction, name: string) {
 
 	const embed = new EmbedBuilder();
 	embed.setTitle(npc.name);
-	embed.setColor('Green');
+	embed.setColor(npc.dead ? 'DarkRed' : 'Green');
 	embed.setDescription(npc.description);
 	embed.setAuthor({
 		name: 'Gaia',
@@ -134,7 +138,7 @@ export async function lookupItem(interaction: CommandInteraction, name: string) 
 
 	const embed = new EmbedBuilder();
 	embed.setTitle(item.name);
-	embed.setColor('Green');
+	embed.setColor('Blue');
 	embed.setDescription(item.description);
 	embed.setAuthor({
 		name: 'Gaia',
@@ -162,9 +166,12 @@ export async function lookupCharacter(interaction: CommandInteraction, name: str
 
 	if(!character) return interaction.reply({ content: 'Character not found', ephemeral: true });
 
+	let cName = character.name;
+	if(character.dead) cName = `☠️ ${cName}`;
+
 	const embed = new EmbedBuilder();
-	embed.setTitle(character.name);
-	embed.setColor('Green');
+	embed.setTitle(cName);
+	embed.setColor(character.dead ? 'DarkRed' : 'Green');
 	embed.setDescription(character.description);
 	embed.setAuthor({
 		name: 'Gaia',
