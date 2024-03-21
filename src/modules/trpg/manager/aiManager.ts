@@ -124,7 +124,7 @@ export async function generate(type: keyof typeof systemPrompts, inputArr: ChatC
         max_tokens: 4096,
     });
 
-    databaseManager.db.aIUsage.create({
+    await databaseManager.db.aIUsage.create({
         data: {
             input: JSON.stringify(input),
             output: response.choices[0].message.content,
