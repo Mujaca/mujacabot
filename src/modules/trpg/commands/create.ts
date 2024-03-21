@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction } from "discord.js";
 import botManager from "../../../manager/botManager";
 import dbManager from "../../../manager/dbManager";
 import { findCurrentWorld } from "../manager/worldManager";
+import { systemMessage } from "../manager/webhookManager";
 
 export async function createPlayer(interaction: ChatInputCommandInteraction, characterName:string, description:null, city:null, userId: string) {
     const currentWorld = await findCurrentWorld();
@@ -49,6 +50,7 @@ export async function createPlayer(interaction: ChatInputCommandInteraction, cha
     });
 
     await interaction.reply({content: "Character created", ephemeral: true});
+    systemMessage(`${interaction.user.displayName} ist dem Spiel mit ${characterName} beigetreten!`)
     //TODO add DM Messages
 }
 
