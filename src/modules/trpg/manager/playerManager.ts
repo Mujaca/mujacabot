@@ -83,6 +83,8 @@ export async function damagePlayer(player: RPGCharacter, damage: number) {
             health: player.health
         },
     });
+
+    return player.health;
 }
 
 export async function sendDMToPlayer(userId: string, embed: EmbedBuilder) {

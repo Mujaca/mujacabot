@@ -14,7 +14,7 @@ import { getCharacter } from './manager/playerManager';
 import { createCity, createItem, createNPC, createPlayer } from './commands/create';
 import { generateCity, generateItem, generateNPC } from './commands/generate';
 import { editCharacter, editCity, editItem, editNPC } from './commands/edit';
-import { getGold, removeGold } from './commands/interact';
+import { damagePlayer, getGold, getItem, giveItem, removeGold, removeItem, sellItem } from './commands/interact';
 import { saveFeedback } from './commands/feedback';
 
 export class TRPG extends Module {
@@ -217,6 +217,11 @@ export class TRPG extends Module {
 			"edit-item": editItem,
 			'interact-getGold': getGold,
 			'interact-removeGold': removeGold,
+			'interaction-getItem': getItem,
+			'interaction-removeItem': removeItem,
+			'interaction-sellItem': sellItem,
+			'interaction-giveItem': giveItem,
+			'interaction-damagePlayer': damagePlayer,
 			'feedback-': saveFeedback
 		}
 
