@@ -69,6 +69,7 @@ export async function damagePlayer(player: RPGCharacter, damage: number) {
             },
             data: {
                 dead: true,
+                health: 0,
             },
         });
     }
