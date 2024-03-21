@@ -23,7 +23,12 @@ export async function createPlayer(interaction: ChatInputCommandInteraction, cha
     const checkCharacter = await dbManager.db.rPGCharacter.findFirst({
         where: {
             userID: userId,
-            worldID: currentWorld.id
+            worldID: currentWorld.id,
+            OR: [
+                {
+                    dead: true
+                }
+            ]
         }
     });
 
