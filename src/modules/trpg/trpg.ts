@@ -103,8 +103,8 @@ export class TRPG extends Module {
         await dbManager.db.rPGMessage.create({
             data: {
                 content: message.content,
-                username: character.name,
-                displayName: message.author.displayName,
+                username: message.author.username,
+                displayName: character.name,
                 profilePicture: message.author.avatarURL(),
             }
         })

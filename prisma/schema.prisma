@@ -189,6 +189,7 @@ model RPGNPC {
   dead        Boolean @default(false)
   city        RPGCity @relation(fields: [cityID], references: [id])
   cityID      Int
+  HP          Int     @default(25)
 }
 
 model RPGGoal {
