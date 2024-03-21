@@ -2,6 +2,7 @@ import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import { version } from '../../../../package.json';
 import { findCurrentWorld } from '../manager/worldManager';
 import dbManager from '../../../manager/dbManager';
+import { getInventory } from '../manager/playerManager';
 
 export async function lookupSystem(interaction: CommandInteraction) {
 	const embed = new EmbedBuilder();
@@ -112,8 +113,11 @@ export async function lookupNPC(interaction: CommandInteraction, name: string) {
 
 	if(!npc) return interaction.reply({ content: 'NPC not found', ephemeral: true });
 
+	let nName = npc.name;
+	if(npc.dead) nName = `☠️ ${nName}`;
+	
 	const embed = new EmbedBuilder();
-	embed.setTitle(npc.name);
+	embed.setTitle(nName);
 	embed.setColor(npc.dead ? 'DarkRed' : 'Green');
 	embed.setDescription(npc.description);
 	embed.setAuthor({
@@ -169,6 +173,8 @@ export async function lookupCharacter(interaction: CommandInteraction, name: str
 	let cName = character.name;
 	if(character.dead) cName = `☠️ ${cName}`;
 
+	const inventory = await getInventory(character.userID);
+
 	const embed = new EmbedBuilder();
 	embed.setTitle(cName);
 	embed.setColor(character.dead ? 'DarkRed' : 'Green');
@@ -177,6 +183,13 @@ export async function lookupCharacter(interaction: CommandInteraction, name: str
 		name: 'Gaia',
 		iconURL: 'https://as1.ftcdn.net/v2/jpg/02/79/04/26/1000_F_279042657_Q222qQOH4BaKzzdTtCP8g5nj6G8AzbDG.jpg',
 	});
+	embed.addFields([
+		{ name: 'HP', value: character.health.toString(), inline: true },
+		{ name: 'Gold', value: character.gold.toString(), inline: true },
+	])
+	if(inventory.length > 0) embed.addFields([
+		{ name: 'Inventar', value: inventory.map(i => i.name).join('\n'), inline: true },
+	]);
 
 	interaction.reply({ embeds: [embed] });
 	
