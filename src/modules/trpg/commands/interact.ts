@@ -8,6 +8,7 @@ export async function getGold(interaction: ChatInputCommandInteraction) {
 
     const character = await getCharacter(interaction.user.id);
     if(!character) return await interaction.reply({ content: "You don't have a character yet", ephemeral: true });
+    if(character.dead) return await interaction.reply({ content: "You are dead", ephemeral: true });
 
     await dbManager.db.rPGCharacter.update({
         where: {
@@ -28,6 +29,7 @@ export async function removeGold(interaction: ChatInputCommandInteraction) {
 
     const character = await getCharacter(interaction.user.id);
     if(!character) return await interaction.reply({ content: "You don't have a character yet", ephemeral: true });
+    if(character.dead) return await interaction.reply({ content: "You are dead", ephemeral: true });
 
     let gold = character.gold - amount;
     if(gold < 0) return await interaction.reply({ content: "You don't have enough gold", ephemeral: true });
