@@ -13,6 +13,7 @@ import { lookupCharacter, lookupCity, lookupItem, lookupNPC, lookupSystem, looku
 import { getCharacter } from './manager/playerManager';
 import { createCity, createItem, createNPC, createPlayer } from './commands/create';
 import { generateCity, generateItem, generateNPC } from './commands/generate';
+import { editCharacter, editCity, editItem, editNPC } from './commands/edit';
 
 export class TRPG extends Module {
 	constructor() {
@@ -163,6 +164,10 @@ export class TRPG extends Module {
 			"create-city": createCity,
 			"create-NPC": createNPC,
 			"create-item": createItem,
+			"edit-character": editCharacter,
+			"edit-city": editCity,
+			"edit-npc": editNPC,
+			"edit-item": editItem
 		}
 
 		if(commandCallbacks[command]) return await commandCallbacks[command](interaction, name, description, city, interaction.user.id);
