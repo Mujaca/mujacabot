@@ -4,6 +4,7 @@ import { generate } from "./aiManager";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { broadcast } from "./webhookManager";
 import { damagePlayer } from "./playerManager";
+import { findCurrentWorld } from "./worldManager";
 
 const cache: Map<string, RPGNPC> = new Map();
 
@@ -117,6 +118,7 @@ async function letNPCDie(npc: RPGNPC) {
 
     try {
         setTimeout(async () => {
+            const world = await findCurrentWorld();
             const deathObj = JSON.parse(deathMessage);
 
             await databaseManager.db.rPGMessage.create({
@@ -124,7 +126,8 @@ async function letNPCDie(npc: RPGNPC) {
                     content: deathObj.content,
                     username: 'npc',
                     displayName: npc.name,
-                    profilePicture: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
+                    profilePicture: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
+                    worldID: world.id
                 }
             });
 
