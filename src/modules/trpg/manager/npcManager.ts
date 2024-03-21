@@ -3,6 +3,7 @@ import databaseManager from "../../../manager/dbManager";
 import { generate } from "./aiManager";
 import { ChatCompletionMessageParam } from "openai/resources";
 import { broadcast } from "./webhookManager";
+import { damagePlayer } from "./playerManager";
 
 const cache: Map<string, RPGNPC> = new Map();
 
@@ -39,20 +40,11 @@ export async function handleMessage(message: string, player: RPGCharacter) {
 
         console.log(answerString);
 
-        if (answer.dead) {
-            await databaseManager.db.rPGNPC.update({
-                where: {
-                    id: npc.id
-                },
-                data: {
-                    dead: true
-                }
-            });
+        if (answer.dead) letNPCDie(npc);
 
-            cache.delete(npc.name);
-        }
-
+        if(answer.damageToPlayer) damagePlayer(player, answer.damageToPlayer);
         if (!answer.damageToNPC) return answer;
+
 
         npc.HP -= answer.damageToNPC;
         await databaseManager.db.rPGNPC.update({

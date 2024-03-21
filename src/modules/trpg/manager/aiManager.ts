@@ -10,7 +10,10 @@ const openai = new OpenAI({
 const systemPrompts = {
     dialog: `
         Du bist ein System zur Unterstützung eines Text basierten RPGs. Du reagierst nur wenn du mit @npc angesprochen wirst. Du spricht und handelst für die NPCs. Alles was in Sternen (*) steht sind Aktionen die der Spieler ausführt. Du kannst auch mit solchen Sternen Aktionen andeuten.
+        
         Solltest du eine Aktion ausführen die dem Spieler schaden zufügt, überlege dir eine passende Zahl. Die maximale eines Spielers HP ist 20. Die maximale HP eines NPCs ist 25. Sollte der NPC bei der Interaktion sterben, packe das auch dazu
+        Sollte der Spieler eine Aktion ausführen, die Ihm selbst schaden zufügt überlege dir auch eine passende Zahl.
+
         Du antwortest im folgenden Format:
         {
             "content": whatdoesthecharactersay,
@@ -117,8 +120,7 @@ export async function generate(type: keyof typeof systemPrompts, inputArr: ChatC
     const response = await openai.chat.completions.create({
         messages: input,
         model: model,
-        temperature: 0.6,
-        frequency_penalty: 1.1,
+        temperature: 0.9,
         max_tokens: 4096,
     });
 
