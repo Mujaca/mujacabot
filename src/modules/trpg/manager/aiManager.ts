@@ -1,19 +1,21 @@
 import OpenAI from 'openai';
 import databaseManager from '../../../manager/dbManager';
 import { Chat, ChatCompletionMessageParam } from 'openai/resources';
+import { ChatCompletionCreateParamsBase } from 'openai/resources/chat/completions';
 
 const openai = new OpenAI({
-	apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 const systemPrompts = {
-	dialog: `
+    dialog: `
         Du bist ein System zur Unterstützung eines Text basierten RPGs. Du reagierst nur wenn du mit @npc angesprochen wirst. Du spricht und handelst für die NPCs. Alles was in Sternen (*) steht sind Aktionen die der Spieler ausführt. Du kannst auch mit solchen Sternen Aktionen andeuten.
-        Solltest du eine Aktion ausführen die dem Spieler schaden zufügt, überlege dir eine passende Zahl. Die maximale HP ist 10. Sollte der NPC bei der Interaktion sterben, packe das auch dazu
+        Solltest du eine Aktion ausführen die dem Spieler schaden zufügt, überlege dir eine passende Zahl. Die maximale eines Spielers HP ist 20. Die maximale HP eines NPCs ist 25. Sollte der NPC bei der Interaktion sterben, packe das auch dazu
         Du antwortest im folgenden Format:
         {
             "content": whatdoesthecharactersay,
             "damageToPlayer": derSchaden,
+            "damageToNPC": derSchaden,
             "dead":boolean
         }
     `,
@@ -31,7 +33,7 @@ const systemPrompts = {
             "emotion":emotion
         }
     `,
-	world: `
+    world: `
         Du bist Gott. Du erstellst mir auf Wunsch eine Welt in einem von mir ausgesuchtem Genre.
 
         Du antwortest im folgenden Format:
@@ -41,7 +43,7 @@ const systemPrompts = {
             "description": description
         }
     `,
-	city: `
+    city: `
         Du bist Gott. Du erstellst für die Welt "([world])" im Genre "([genre])" eine Stadt. 
 
         Du antwortest im folgenden Format:
@@ -51,7 +53,7 @@ const systemPrompts = {
             "description": description
         }
     `,
-	npc: `
+    npc: `
         Du bist Gott. Du erstellst für die Welt "([world])" im Genre "([genre])" eine NPC der in einer Stadt Namens "([city])" wohnt
         Du antwortest im folgenden Format:
 
@@ -83,36 +85,52 @@ const systemPrompts = {
         {
             "npc": npcName || "new"
         }
+    `,
+    dead: `
+        Du bist ein System zur Unterstützung eines TextRPGs. Ein NPC ist gerade an zu Hohem Schaden verstorben und du sollst seine Todesnaricht schreiben.
+
+        Du antwortest im folgenden Format:
+        {
+             "content": whatdoesthecharactersay 
+        }
     `
 };
 
+const modelOverrides:{[key:string]: ChatCompletionCreateParamsBase["model"]} = {
+    world: 'gpt-4-turbo-preview',
+    city: 'gpt-4-turbo-preview',
+    npc: 'gpt-4-turbo-preview',
+}
+
 export async function generate(type: keyof typeof systemPrompts, inputArr: ChatCompletionMessageParam[], toReplace: { [key: string]: string } = {}) {
-	let system = systemPrompts[type];
-	for (let key in toReplace) {
-		system = system.replaceAll(`([${key}])`, toReplace[key]);
-	}
+    let system = systemPrompts[type];
+    for (let key in toReplace) {
+        system = system.replaceAll(`([${key}])`, toReplace[key]);
+    }
 
     system += "Du wirst IMMER in Deutsch antworten"
 
-	const input:ChatCompletionMessageParam[] = [{ role: 'system', content: systemPrompts[type] }, ...inputArr];
+    const input: ChatCompletionMessageParam[] = [{ role: 'system', content: systemPrompts[type] }, ...inputArr];
 
-	const response = await openai.chat.completions.create({
-		messages: input,
-		model: 'gpt-4-turbo-preview',
-		temperature: 0.6,
+    const model = modelOverrides[type] || 'gpt-3.5-turbo';
+
+    const response = await openai.chat.completions.create({
+        messages: input,
+        model: model,
+        temperature: 0.6,
         frequency_penalty: 1.1,
-		max_tokens: 4096,
-	});
+        max_tokens: 4096,
+    });
 
-	databaseManager.db.aIUsage.create({
-		data: {
-			input: JSON.stringify(input),
-			output: response.choices[0].message.content,
-		},
-	});
+    databaseManager.db.aIUsage.create({
+        data: {
+            input: JSON.stringify(input),
+            output: response.choices[0].message.content,
+        },
+    });
 
     response.choices[0].message.content = response.choices[0].message.content.replaceAll('\n', ' ')
     response.choices[0].message.content = response.choices[0].message.content.replaceAll('```json', '')
     response.choices[0].message.content = response.choices[0].message.content.replaceAll('```', '')
-	return response.choices[0].message.content;
+    return response.choices[0].message.content;
 }
