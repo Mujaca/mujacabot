@@ -132,6 +132,8 @@ model RPGMessage {
   username       String
   displayName    String
   profilePicture String
+  world          RPGWorld @relation(fields: [worldID], references: [id])
+  worldID        Int
   created_at     DateTime @default(now())
 }
 
@@ -144,6 +146,7 @@ model RPGWorld {
   players     RPGCharacter[]
   items       RPGItem[]
   current     Boolean        @default(false)
+  messages    RPGMessage[]
 }
 
 model RPGCharacter {

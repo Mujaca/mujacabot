@@ -153,6 +153,7 @@ export class TRPG extends Module {
 				username: message.author.username,
 				displayName: character.name,
 				profilePicture: message.author.avatarURL(),
+				worldID: character.worldID,
 			}
 		})
 
@@ -183,6 +184,7 @@ export class TRPG extends Module {
 				username: "npc",
 				displayName: answer.npc.name,
 				profilePicture: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
+				worldID: character.worldID,
 			}
 		})
 	}

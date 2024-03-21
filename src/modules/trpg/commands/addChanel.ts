@@ -80,6 +80,9 @@ export async function addttrpgchannel(interaction: ChatInputCommandInteraction) 
 
 	const messages = await dbManager.db.rPGMessage.findMany({
 		take: 100,
+		where: {
+			worldID: world.id,
+		},
 	});
 	for (let message of messages) {
 		await webhook.send({
