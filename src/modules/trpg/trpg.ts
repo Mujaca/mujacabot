@@ -126,7 +126,7 @@ export class TRPG extends Module {
 			});
 		}
 
-		const answer = await handleMessage(message.content);
+		const answer = await handleMessage(message.content, character);
 		if(answer === null) return;
 		await broadcast(answer.npc.name, answer.content);
 

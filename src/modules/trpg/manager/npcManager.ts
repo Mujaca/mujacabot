@@ -1,4 +1,4 @@
-import { RPGNPC } from "@prisma/client";
+import { RPGCharacter, RPGNPC } from "@prisma/client";
 import databaseManager from "../../../manager/dbManager";
 import { generate } from "./aiManager";
 import { ChatCompletionMessageParam } from "openai/resources";
@@ -6,7 +6,7 @@ import { broadcast } from "./webhookManager";
 
 const cache: Map<string, RPGNPC> = new Map();
 
-export async function handleMessage(message: string) {
+export async function handleMessage(message: string, player: RPGCharacter) {
     if (!message.includes("@")) return null;
 
     const npc = await findNPC(message);
