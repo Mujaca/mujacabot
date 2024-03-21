@@ -16,6 +16,7 @@ model BotUser {
   LoNBookmarks  LoNBookmark[]
   TcGPlayers    TcGPlayer?
   RPGCharacters RPGCharacter[]
+  RPGFeedback   RPGFeedback[]
 }
 
 model LoNChannel {
@@ -215,4 +216,11 @@ model AIUsage {
   input   String   @db.LongText
   output  String   @db.LongText
   created DateTime @default(now())
+}
+
+model RPGFeedback {
+  id      Int      @id @default(autoincrement())
+  message String   @db.LongText
+  user    BotUser  @relation(fields: [userID], references: [id])
+  userID  String
 }

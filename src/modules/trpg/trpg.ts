@@ -15,6 +15,7 @@ import { createCity, createItem, createNPC, createPlayer } from './commands/crea
 import { generateCity, generateItem, generateNPC } from './commands/generate';
 import { editCharacter, editCity, editItem, editNPC } from './commands/edit';
 import { getGold, removeGold } from './commands/interact';
+import { saveFeedback } from './commands/feedback';
 
 export class TRPG extends Module {
 	constructor() {
@@ -105,7 +106,13 @@ export class TRPG extends Module {
 				.addStringOption(option => option.setName('ptarget').setDescription('The charactera you want to interact with').setRequired(false))
 				.addStringOption(option => option.setName('itarget').setDescription('The item you want to interact with').setRequired(false))
 				.addIntegerOption(option => option.setName('amount').setDescription('The amount of the action').setRequired(false))
-			)
+		)
+
+		trpg.commandBuilder.addSubcommand(command =>
+			command.setName('feedback')
+			.setDescription('Send Feedback to the Developer')
+			.addStringOption(option => option.setName('feedback').setDescription('The Feedback you want to send').setRequired(true))
+		)
 
 
 		commandManager.registerCommand('ttrpg', trpg)
@@ -183,7 +190,7 @@ export class TRPG extends Module {
 	async mainCommand(interaction: ChatInputCommandInteraction) {
 		const subcommand = interaction.options.getSubcommand();
 		if (subcommand == 'console') return await handleInteraction(interaction);
-		const type = interaction.options.getString('type');
+		const type = interaction.options.getString('type') || '';
 
 		const name = interaction.options.getString('name');
 		const description = interaction.options.getString('description');
@@ -210,6 +217,7 @@ export class TRPG extends Module {
 			"edit-item": editItem,
 			'interact-getGold': getGold,
 			'interact-removeGold': removeGold,
+			'feedback-': saveFeedback
 		}
 
 		if (commandCallbacks[command]) return await commandCallbacks[command](interaction, name, description, city, interaction.user.id);
