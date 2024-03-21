@@ -16,9 +16,9 @@ const systemPrompts = {
 
         Du antwortest im folgenden Format:
         {
-            "content": whatdoesthecharactersay,
-            "damageToPlayer": derSchaden,
-            "damageToNPC": derSchaden,
+            "content": whatdoesthecharactersay (string),
+            "damageToPlayer": derSchaden (int),
+            "damageToNPC": derSchaden (int),
             "dead":boolean
         }
     `,
@@ -31,9 +31,9 @@ const systemPrompts = {
         Du antwortest im folgenden Format:
     
         {
-            "name": name,
-            "summary": summary,
-            "emotion":emotion
+            "name": name (string),
+            "summary": summary (string),
+            "emotion":emotion (string)
         }
     `,
     world: `
@@ -42,8 +42,8 @@ const systemPrompts = {
         Du antwortest im folgenden Format:
     
         {
-            "name": name,
-            "description": description
+            "name": name (string),
+            "description": description (string)
         }
     `,
     city: `
@@ -52,8 +52,8 @@ const systemPrompts = {
         Du antwortest im folgenden Format:
     
         {
-            "name": name,
-            "description": description
+            "name": name (string), 
+            "description": description (string)
         }
     `,
     npc: `
@@ -61,16 +61,16 @@ const systemPrompts = {
         Du antwortest im folgenden Format:
 
         {
-            "name": name,
-            "description": description
+            "name": name (string),
+            "description": description (string)
         }
     `,
     item: `
         Du bist Gott. Du erstellst für die Welt "([world])" im Genre "([genre])" ein Item. Items die du erstellst müssen entweder ein damage oder ein armor wert haben. 
         Du antwortest im folgenden Format : 
         {
-            "name": name,
-            "description": description,
+            "name": name (string),
+            "description": description (string),
             "damage": damage (int),
             "armor": armor (int),
             "cost": cost (int)
@@ -86,7 +86,7 @@ const systemPrompts = {
         Du antwortest im folgenden Format:
         
         {
-            "npc": npcName || "new"
+            "npc": npcName (string) || "new"
         }
     `,
     dead: `
@@ -94,7 +94,7 @@ const systemPrompts = {
 
         Du antwortest im folgenden Format:
         {
-             "content": whatdoesthecharactersay 
+             "content": whatdoesthecharactersay (string)
         }
     `
 };
