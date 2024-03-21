@@ -19,11 +19,15 @@ async function registerCommand(commandName:string, commandClass:command){
 }
 
 async function submitCommands() {
-    await botManager.rest.put(Routes.applicationGuildCommands(process.env.APPLICATION_ID, process.env.TESTSERVER), {
+    if(process.env.TESTSERVER) await botManager.rest.put(Routes.applicationGuildCommands(process.env.APPLICATION_ID, process.env.TESTSERVER), {
         body: bodyArray
     });
 
-    console.error("Submitted all Commands!")
+    if(!process.env.TESTSERVER) await botManager.rest.put(Routes.applicationCommands(process.env.APPLICATION_ID), {
+        body: bodyArray
+    });
+
+    console.error(`Submitted all Commands to ${process.env.TESTSERVER ? 'Test Server Commands' : 'Global Commands'}!`)
 }
 
 export default {
