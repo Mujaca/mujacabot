@@ -1,4 +1,5 @@
 import { ChatInputCommandInteraction } from "discord.js";
+import dbManager from "../../../manager/dbManager";
 
 const numberToEmote = {
     "0": "0️⃣",
@@ -36,6 +37,14 @@ export async function PaProllDice(interaction: ChatInputCommandInteraction) {
             break;
     }
     
+    await dbManager.db.diceRoll.create({
+        data: {
+            result: result,
+            dice: dice,
+            userID: interaction.user.id,
+            channelID: interaction.channel.id,
+        }
+    });
     (await interactionMessage).edit({content:`:sparkles:${convertToEmote(result)}:sparkles: ${message ?? ""}`})
 }
 
