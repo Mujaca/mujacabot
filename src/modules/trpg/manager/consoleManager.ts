@@ -5,7 +5,8 @@ import { disableCurrentWorld, setCurrentWorld } from "./worldManager";
 import { broadcast, systemMessage } from "./webhookManager";
 
 const consoleCommands = {
-    createWorld
+    createWorld,
+    systemWarningMessage
 }
 
 export async function handleInteraction(interaction: ChatInputCommandInteraction) {
@@ -109,4 +110,9 @@ export async function createWorld(args:string, interaction: ChatInputCommandInte
         reply.edit({content: `Error creating new World. Please try again later!`});
         return false;    
     }
+}
+
+export async function systemWarningMessage(args: string, interaction: ChatInputCommandInteraction) {
+    systemMessage(args);
+    await interaction.reply({content: 'Message sent', ephemeral: true});
 }
