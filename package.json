@@ -4,7 +4,7 @@
   "description": "The third try for my Discord Bot. Here goes nothing!",
   "main": "dist/index.js",
   "scripts": {
-    "compile": "tsc && prisma generate",
+    "compile": "prisma generate && tsc",
     "start": "npm run compile && node dist/index.js",
     "dev": "tsc -w & nodemon dist/index.js --ignore db_backup/"
   },
