@@ -24,21 +24,21 @@
   "homepage": "https://github.com/Mujaca/mujacabot#readme",
   "dependencies": {
     "@discordjs/core": "^0.5.2",
-    "@discordjs/rest": "^1.7.0",
-    "@prisma/client": "^5.11.0",
-    "axios": "^1.6.7",
+    "@discordjs/rest": "^1.7.1",
+    "@prisma/client": "^5.13.0",
+    "axios": "^1.6.8",
     "colors": "^1.4.0",
     "cron": "^3.1.6",
-    "discord.js": "^14.9.0",
-    "dotenv": "^16.0.3",
+    "discord.js": "^14.15.2",
+    "dotenv": "^16.4.5",
     "mongodb": "^5.3.0",
-    "openai": "^4.28.4",
+    "openai": "^4.42.0",
     "pokemon-tcg-sdk-typescript": "^1.3.4",
     "timezone-support": "^3.1.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.4.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
-    "prisma": "^5.11.0"
+    "prisma": "^5.13.0"
   }
 }
