@@ -96,13 +96,21 @@ const systemPrompts = {
         {
              "content": whatdoesthecharactersay (string)
         }
+    `,
+    summary: `
+        Du bist ein System zur Unterstützung eines TextRPGs. Du sollst die angegeben Nachrichten in einen kurzen Text zusammenfassen.
+        
+        Du antwortest im folgenden Format:
+        {
+            "summary": summary (string)
+        }
     `
 };
 
 const modelOverrides:{[key:string]: ChatCompletionCreateParamsBase["model"]} = {
-    world: 'gpt-4-turbo-preview',
-    city: 'gpt-4-turbo-preview',
-    npc: 'gpt-4-turbo-preview',
+    world: 'gpt-4o-2024-05-13',
+    city: 'gpt-4o-2024-05-13',
+    npc: 'gpt-4o-2024-05-13',
 }
 
 export async function generate(type: keyof typeof systemPrompts, inputArr: ChatCompletionMessageParam[], toReplace: { [key: string]: string } = {}) {

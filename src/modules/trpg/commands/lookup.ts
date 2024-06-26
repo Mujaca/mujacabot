@@ -9,7 +9,7 @@ export async function lookupSystem(interaction: CommandInteraction) {
 	embed.setTitle(`Gaia™ v${version}`);
 	embed.addFields([
 		{ name: 'Gaia Overview & Regulation System', value: 'Operational' },
-		{ name: 'Player System', value: 'Running - (128 unresolved issues)' },
+		{ name: 'Player System', value: 'Running - (4 unresolved issues)' },
 		{ name: 'Memory Supression System', value: 'Operational' },
 		{ name: 'Event System', value: 'Malfunctioning' },
 		{ name: 'NPC System', value: 'Operational' },
@@ -28,7 +28,7 @@ export async function lookupSystem(interaction: CommandInteraction) {
 
 	const support = new EmbedBuilder();
 	support.setTitle('You want to support?');
-	support.setDescription('You can support the development of Gaia™ by donating to the following link: [Paypal](https://paypal.me/mujaca) (please, AI ussage is not cheap and I dont want to turn the project off)');
+	support.setDescription('You can support the development of Gaia™ by donating to the following link: [Paypal](https://paypal.me/mujaca)');
 
 	interaction.reply({ embeds: [embed, support] });
 }

@@ -89,6 +89,19 @@ export async function createWorld(args:string, interaction: ChatInputCommandInte
             }
         });
 
+        const npc = await generate('npc', [
+            { role: 'user', content: dbworld.description },
+            { role: 'user', content: cityData.description}
+        ], {world: dbworld.name, genre: dbworld.genre, city: cityData.name});
+        const npcData = JSON.parse(npc);
+        await dbManager.db.rPGNPC.create({
+            data: {
+                name: npcData.name,
+                description: npcData.description,
+                cityID: cityData.id
+            }
+        });
+
         setTimeout(() => { systemMessage("Shutdown initiated") }, 1000 * 1);
         setTimeout(() => { systemMessage("Shutting down world system ...") }, 1000 * 5);
         setTimeout(() => { disableCurrentWorld() }, 1000 * 5);
