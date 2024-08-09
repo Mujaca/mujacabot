@@ -108,9 +108,9 @@ const systemPrompts = {
 };
 
 const modelOverrides:{[key:string]: ChatCompletionCreateParamsBase["model"]} = {
-    world: 'gpt-4o-2024-05-13',
-    city: 'gpt-4o-2024-05-13',
-    npc: 'gpt-4o-2024-05-13',
+    world: 'gpt-4o',
+    city: 'gpt-4o',
+    npc: 'gpt-4o',
 }
 
 export async function generate(type: keyof typeof systemPrompts, inputArr: ChatCompletionMessageParam[], toReplace: { [key: string]: string } = {}) {

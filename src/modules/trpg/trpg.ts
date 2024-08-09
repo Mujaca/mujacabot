@@ -16,6 +16,8 @@ import { generateCity, generateItem, generateNPC } from './commands/generate';
 import { editCharacter, editCity, editItem, editNPC } from './commands/edit';
 import { damagePlayer, getGold, getItem, giveItem, removeGold, removeItem, sellItem } from './commands/interact';
 import { saveFeedback } from './commands/feedback';
+import apiManager from '../../manager/apiManager';
+import api from './api';
 
 export class TRPG extends Module {
 	constructor() {
@@ -23,12 +25,12 @@ export class TRPG extends Module {
 		botManager.client.on('messageCreate', this.messageHandler);
 		this.init()
 
-		const addTTRPGChannel = new command('addttrpg', "Add's this Channel as a TTRPG Channel", addttrpgchannel);
+		const addTTRPGChannel = new command('addtrpg', "Add's this Channel as a TTRPG Channel", addttrpgchannel);
 		addTTRPGChannel.commandBuilder.addChannelOption((option) => option.setName('channel').setDescription('The Channel').addChannelTypes(ChannelType.GuildText).setRequired(true));
 		addTTRPGChannel.commandBuilder.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels);
 
 
-		const trpg = new command('ttrpg', "trpg Command", this.mainCommand);
+		const trpg = new command('trpg', "trpg Command", this.mainCommand);
 		trpg.commandBuilder.addSubcommand(command =>
 			command.setName('create')
 				.setDescription('Create a Character, Item, City or NPC')
@@ -117,6 +119,8 @@ export class TRPG extends Module {
 
 		commandManager.registerCommand('ttrpg', trpg)
 		commandManager.registerCommand('addttrpg', addTTRPGChannel);
+
+		apiManager.registerRoute('/trpg', api);
 	}
 
 	async init() {
