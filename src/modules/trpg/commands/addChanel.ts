@@ -76,19 +76,19 @@ export async function addttrpgchannel(interaction: ChatInputCommandInteraction) 
 			avatarURL: 'https://as1.ftcdn.net/v2/jpg/02/79/04/26/1000_F_279042657_Q222qQOH4BaKzzdTtCP8g5nj6G8AzbDG.jpg',
 			embeds: [worldEmbed],
 		});
-	}
 
-	const messages = await dbManager.db.rPGMessage.findMany({
-		take: 100,
-		where: {
-			worldID: world.id,
-		},
-	});
-	for (let message of messages) {
-		await webhook.send({
-			content: message.content,
-			username: message.displayName,
-			avatarURL: message.profilePicture,
+		const messages = await dbManager.db.rPGMessage.findMany({
+			take: 100,
+			where: {
+				worldID: world.id,
+			},
 		});
+		for (let message of messages) {
+			await webhook.send({
+				content: message.content,
+				username: message.displayName,
+				avatarURL: message.profilePicture,
+			});
+		}
 	}
 }

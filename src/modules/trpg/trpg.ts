@@ -117,8 +117,8 @@ export class TRPG extends Module {
 		)
 
 
-		commandManager.registerCommand('ttrpg', trpg)
-		commandManager.registerCommand('addttrpg', addTTRPGChannel);
+		commandManager.registerCommand('trpg', trpg)
+		commandManager.registerCommand('addtrpg', addTTRPGChannel);
 
 		apiManager.registerRoute('/trpg', api);
 	}
