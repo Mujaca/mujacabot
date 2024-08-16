@@ -80,8 +80,8 @@ export async function createWorld(args:string, interaction: ChatInputCommandInte
         const city = await generate('city', [
             { role: 'user', content: dbworld.description }
         ], {world: dbworld.name, genre: dbworld.genre});
-        const cityData = JSON.parse(city);
-        await dbManager.db.rPGCity.create({
+        let cityData = JSON.parse(city);
+        cityData = await dbManager.db.rPGCity.create({
             data: {
                 name: cityData.name,
                 description: cityData.description,
