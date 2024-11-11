@@ -3,4 +3,4 @@ dist/
 .env
 prisma/migrations/
 db_backup/
-music/
+/music/
