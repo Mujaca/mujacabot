@@ -17,7 +17,6 @@ model BotUser {
   TcGPlayers    TcGPlayer?
   RPGCharacters RPGCharacter[]
   RPGFeedback   RPGFeedback[]
-  musicFile     musicFile[]
 }
 
 model LoNChannel {
@@ -243,7 +242,5 @@ model musicFile {
   youtubeId String
   name      String
   url       String
-  added_by  BotUser @relation(fields: [userID], references: [id])
-  userID    String
   cached    String? @db.LongText
 }
