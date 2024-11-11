@@ -25,6 +25,7 @@
   "dependencies": {
     "@discordjs/core": "^0.5.2",
     "@discordjs/rest": "^1.7.1",
+    "@discordjs/voice": "^0.17.0",
     "@prisma/client": "^5.13.0",
     "@types/node": "^22.1.0",
     "axios": "^1.6.8",

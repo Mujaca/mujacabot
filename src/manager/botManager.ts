@@ -6,7 +6,7 @@ dotenv.config();
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 const client = new Client({
-    intents: [GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.Guilds ,GatewayIntentBits.GuildMessageReactions]
+    intents: [GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.Guilds ,GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildVoiceStates]
 });
 
 function connectBot() {

@@ -16,6 +16,7 @@ import interactionManager from './manager/interactionManager';
 import { PaP } from './modules/pen-and-paper';
 import { TRPG } from './modules/trpg/trpg';
 import { wolvesville } from './modules/wolvesville';
+import { music } from './modules/music';
 
 initialiseConsole();
 connectDatabase();
@@ -27,6 +28,7 @@ moduleManager.registerModule("LewdOrNsFW", new LewdOrNsFW());
 //moduleManager.registerModule("TCG", new TCG());
 moduleManager.registerModule('PaP', new PaP());
 moduleManager.registerModule('trpg', new TRPG());
+moduleManager.registerModule('Music', new music());
 //moduleManager.registerModule('Wolvesville', new wolvesville());
 
 //Register Commands outside of modules
