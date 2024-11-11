@@ -17,6 +17,7 @@ model BotUser {
   TcGPlayers    TcGPlayer?
   RPGCharacters RPGCharacter[]
   RPGFeedback   RPGFeedback[]
+  musicFile     musicFile[]
 }
 
 model LoNChannel {
@@ -231,8 +232,18 @@ model AIUsage {
 }
 
 model RPGFeedback {
-  id      Int      @id @default(autoincrement())
-  message String   @db.LongText
-  user    BotUser  @relation(fields: [userID], references: [id])
+  id      Int     @id @default(autoincrement())
+  message String  @db.LongText
+  user    BotUser @relation(fields: [userID], references: [id])
   userID  String
+}
+
+model musicFile {
+  id        Int     @id @default(autoincrement())
+  youtubeId String
+  name      String
+  url       String
+  added_by  BotUser @relation(fields: [userID], references: [id])
+  userID    String
+  cached    String? @db.LongText
 }
