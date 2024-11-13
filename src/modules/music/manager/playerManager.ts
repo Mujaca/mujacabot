@@ -15,3 +15,8 @@ export function createPlayer(guildId: string, channel: VoiceChannel):musicplayer
 	players.set(guildId, player);
 	return player;
 }
+
+export function destroyPlayer(guildId: string):void {
+	getPlayer(guildId)?.stop();
+	players.delete(guildId);
+}

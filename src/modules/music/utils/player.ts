@@ -76,7 +76,14 @@ export class musicplayer {
 		this.playing = false;
 	}
 
+	public stop() {
+		this.audio.stop();
+		this.connection.disconnect();
+		this.playing = false;
+	}
+
 	public isPlaying() {
 		return this.playing;
 	}
+
 }

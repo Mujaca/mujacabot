@@ -4,6 +4,7 @@ import commandManager from "../../manager/commandManager";
 import { musicConnectCommand } from "./commands/connect";
 import { musicPauseCommand } from "./commands/pause";
 import { musicPlayCommand } from "./commands/play";
+import { musicStopCommand } from "./commands/stop";
 
 export class music extends Module {
 	constructor() {
@@ -13,9 +14,11 @@ export class music extends Module {
 		const playCommand = new command ("play", "Spiele Musik", musicPlayCommand);
 		playCommand.commandBuilder.addStringOption(option => option.setName("url").setDescription("Die URL des Videos").setRequired(true));
 		const pauseCommand = new command ("pause", "Pausiere die Musik", musicPauseCommand);
+		const stopCommand = new command ("stop", "Stoppe die Musik", musicStopCommand);
 
 		commandManager.registerCommand("connect", connectCommand)
 		commandManager.registerCommand("play", playCommand)
 		commandManager.registerCommand("pause", pauseCommand)
+		commandManager.registerCommand("stop", stopCommand)
 	}
 }
