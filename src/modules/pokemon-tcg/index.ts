@@ -39,7 +39,7 @@ export class TCG extends Module {
     }
 
     async onInit() {
-        const playerCollection = databaseManager.db.collection<playerData>("TCGplayer");
+        const playerCollection = databaseManager.db.collection("TCGplayer");
         const players = await playerCollection.find().toArray();
 
         for(const player of players) {

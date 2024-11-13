@@ -12,7 +12,7 @@ export class profilePictures extends Module {
     }
 
     async checkProfilePictures() {
-        const collection = databaseManager.db.collection<profilePicture>("profile-pictures");
+        const collection = databaseManager.db.collection("profile-pictures");
         const guilds = botManager.client.guilds.cache.map(guild => guild);
         for (const guild of guilds) {
             const members = (await guild.members.fetch()).map(member => member);

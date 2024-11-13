@@ -23,7 +23,7 @@ export class player{
     }
 
     private async findUser() {
-        const playerCollection = databaseManager.db.collection<playerData>("TCGplayer");
+        const playerCollection = databaseManager.db.collection("TCGplayer");
         const player = await playerCollection.findOne({userID: this.userID});
         if(player) return player;
 
@@ -39,7 +39,7 @@ export class player{
     }
 
     private async update() {
-        const playerCollection = databaseManager.db.collection<playerData>("TCGplayer");
+        const playerCollection = databaseManager.db.collection("TCGplayer");
         await playerCollection.updateOne({userID: this.userID}, {$set: {
             money: this.money,
             cards: this.cards,

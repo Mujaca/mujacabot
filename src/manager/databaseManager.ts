@@ -1,4 +1,4 @@
-const db = {}
+const db:any = {};
 
 export default {
 	db
