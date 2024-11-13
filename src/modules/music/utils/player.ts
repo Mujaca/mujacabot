@@ -11,6 +11,7 @@ export class musicplayer {
 	
 	private connection:VoiceConnection;
 	private audio:AudioPlayer = new AudioPlayer();
+	private playing:boolean = false;
 	
 	constructor(channel: VoiceChannel) {
 		this.connection = joinVoiceChannel({
@@ -25,6 +26,7 @@ export class musicplayer {
 		const resource = createAudioResource(file.cached);
 		this.audio.play(resource);
 		this.connection.subscribe(this.audio);
+		this.playing = true;
 	}
 
 	async getVideoEntry(url: string):Promise<musicFile> {
@@ -48,6 +50,7 @@ export class musicplayer {
 			}
 		});
 
+		// @ts-ignore
 		const downloadTarget = ytldl(url, { filter: "audioonly" });
 		//@ts-ignore
 		const stream = downloadTarget.pipe(fs.createWriteStream(`./music/${youtubeId[1]}.mp3`));
@@ -66,6 +69,14 @@ export class musicplayer {
 		});
 
 		return file;
+	}
 
+	public pause() {
+		this.audio.pause();
+		this.playing = false;
+	}
+
+	public isPlaying() {
+		return this.playing;
 	}
 }
