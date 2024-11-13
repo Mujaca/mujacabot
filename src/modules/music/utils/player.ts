@@ -17,6 +17,7 @@ export class musicplayer {
 	private currentSong: musicFile;
 	private queue: musicFile[] = [];
 	private loop: false | "song" | "playlist" = false;
+	private shuffle: false | "random" | "playlist" = false;
 
 	constructor(channel: VoiceChannel) {
 		this.connection = joinVoiceChannel({
@@ -30,18 +31,19 @@ export class musicplayer {
 			if (!this.playing) return;
 			if (this.queue.length === 0) return this.playing = false;
 
-			if(!this.loop) return this.play(this.queue.shift(), true);
-			if(this.loop === "song") return this.play(this.currentSong, true);
-			if(this.loop === "playlist") {
-				this.queue.push(this.currentSong);
-				return this.play(this.queue.shift(), true);
-			}
+			const nextSong = this.getNextSong();
+			return this.play(nextSong, true);
 		});
 	}
 
 	play(file: musicFile, queuedSong:boolean = false):boolean {
 		if(this.playing && !queuedSong) {
 			this.queue.push(file);
+
+			if(this.shuffle === "playlist") {
+				this.queue = this.queue.sort(() => Math.random() - 0.5);
+			}
+
 			return false;
 		}
 
@@ -116,6 +118,18 @@ export class musicplayer {
 
 	public isPlaying() {
 		return this.playing;
+	}
+
+	private getNextSong(): musicFile {
+		if (this.loop === "song") return this.currentSong;
+		if (this.loop === "playlist") this.queue.push(this.currentSong);
+
+		if (this.shuffle === "random") {
+			const randomIndex = Math.floor(Math.random() * this.queue.length);
+			return this.queue.splice(randomIndex, 1)[0];
+		}
+
+		return this.queue.shift();
 	}
 
 }
