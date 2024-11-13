@@ -16,8 +16,8 @@ export class musicplayer {
 	private playing: boolean = false;
 	private currentSong: musicFile;
 	private queue: musicFile[] = [];
-	private loop: false | "song" | "playlist" = false;
-	private shuffle: false | "random" | "playlist" = false;
+	private loop: loopType = false;
+	private shuffle: shuffleType = false;
 
 	constructor(channel: VoiceChannel) {
 		this.connection = joinVoiceChannel({
@@ -29,7 +29,7 @@ export class musicplayer {
 
 		this.audio.on(AudioPlayerStatus.Idle, () => {
 			if (!this.playing) return;
-			if (this.queue.length === 0) return this.playing = false;
+			if (this.queue.length === 0 && this.loop == false) return this.playing = false;
 
 			const nextSong = this.getNextSong();
 			return this.play(nextSong, true);
@@ -39,10 +39,6 @@ export class musicplayer {
 	play(file: musicFile, queuedSong:boolean = false):boolean {
 		if(this.playing && !queuedSong) {
 			this.queue.push(file);
-
-			if(this.shuffle === "playlist") {
-				this.queue = this.queue.sort(() => Math.random() - 0.5);
-			}
 
 			return false;
 		}
@@ -112,8 +108,14 @@ export class musicplayer {
 		this.currentSong = null;
 	}
 
-	public setLoop(song: false | "song" | "playlist") {
+	public setLoop(song: loopType) {
 		this.loop = song;
+	}
+
+	public setShuffle(shuffle: shuffleType) {
+		this.shuffle = shuffle;
+
+		if(this.shuffle === "random") this.queue = this.queue.sort(() => Math.random() - 0.5);
 	}
 
 	public isPlaying() {
@@ -133,3 +135,6 @@ export class musicplayer {
 	}
 
 }
+
+export type loopType = false | "song" | "playlist";
+export type shuffleType = false | "random" | "playlist";
