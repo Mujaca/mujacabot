@@ -20,6 +20,6 @@ export async function musicPlayCommand(interaction: ChatInputCommandInteraction)
 
 	const reply = await interaction.deferReply({ ephemeral: true });
 	const entry = await player.getVideoEntry(url);
-	await player.play(entry);
-	reply.edit("Spiele " + entry.name);
+	const playing = player.play(entry);
+	reply.edit(`${playing ? "Spiele" : "Zur Warteliste hinzugefügt"}: ${entry.name}`);
 }
