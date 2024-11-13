@@ -115,7 +115,8 @@ export class musicplayer {
 	public setShuffle(shuffle: shuffleType) {
 		this.shuffle = shuffle;
 
-		if(this.shuffle === "random") this.queue = this.queue.sort(() => Math.random() - 0.5);
+		if(this.shuffle === "playlist") this.queue = this.queue.sort(() => Math.random() - 0.5);
+		if(this.shuffle === "random") this.setLoop("playlist");
 	}
 
 	public isPlaying() {

@@ -31,6 +31,21 @@ export class music extends Module {
 				value: "aus"
 			}
 		]));
+		const shuffleCommand = new command ("shuffle", "Ändere den Shuffle-Modus", musicLoopCommand);
+		shuffleCommand.commandBuilder.addStringOption(option => option.setName("mode").setDescription("Der Shuffle-Modus").setRequired(true).addChoices([
+			{
+				name: "random (Jedes mal einen zufälligen Song, schaltet auch den Loop-Modus auf Playlist)",
+				value: "random"
+			},
+			{
+				name: "Playlist (Mixt die komplette Playlist einmal durch)",
+				value: "playlist"
+			},
+			{
+				name: "Aus",
+				value: "aus"
+			}
+		]));
 
 		commandManager.registerCommand("connect", connectCommand)
 		commandManager.registerCommand("play", playCommand)
