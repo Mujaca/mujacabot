@@ -3,6 +3,7 @@ import { Module } from "../../classes/module";
 import commandManager from "../../manager/commandManager";
 import { musicConnectCommand } from "./commands/connect";
 import { musicLoopCommand } from "./commands/loop";
+import { musicStattusCommand } from "./commands/musicStatus";
 import { musicPauseCommand } from "./commands/pause";
 import { musicPlayCommand } from "./commands/play";
 import { musicStopCommand } from "./commands/stop";
@@ -46,11 +47,14 @@ export class music extends Module {
 				value: "aus"
 			}
 		]));
+		const musicStatusCommand = new command ("musicstatus", "Zeigt den aktuellen Status des Musikplayers", musicStattusCommand);
 
 		commandManager.registerCommand("connect", connectCommand)
 		commandManager.registerCommand("play", playCommand)
 		commandManager.registerCommand("pause", pauseCommand)
 		commandManager.registerCommand("stop", stopCommand)
 		commandManager.registerCommand("loop", loopCommand)
+		commandManager.registerCommand("shuffle", shuffleCommand)
+		commandManager.registerCommand("musicstatus", musicStatusCommand)
 	}
 }

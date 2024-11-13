@@ -1,7 +1,7 @@
 import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioResource, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
 import { musicFile } from "@prisma/client";
 import * as ytldl from "@distube/ytdl-core";
-import { VoiceChannel } from "discord.js";
+import { EmbedBuilder, VoiceChannel } from "discord.js";
 import * as fs from "fs";
 import dbManager from "../../../manager/dbManager";
 
@@ -121,6 +121,35 @@ export class musicplayer {
 
 	public isPlaying() {
 		return this.playing;
+	}
+
+	public getDiscordStatusEmobed():EmbedBuilder {
+		const embed = new EmbedBuilder();
+		embed.setColor("Green");
+		embed.setTitle("Music Player");
+		embed.addFields([
+			{
+				name: "Playing",
+				value: this.currentSong ? this.currentSong.name : "Nothing"
+			},
+			{
+				name: "Queue",
+				value: this.queue.slice(0, 5).map((song, index) => `${index + 1}. ${song.name}`).join("\n") || "Empty"
+			},
+			{
+				name: "Loop",
+				value: this.loop ? this.loop : "Off",
+				inline: true
+			},
+			{
+				name: "Shuffle",
+				value: this.shuffle ? this.shuffle : "Off",
+				inline: true
+			}
+		])
+		embed.setTimestamp();
+
+		return embed
 	}
 
 	private getNextSong(): musicFile {
