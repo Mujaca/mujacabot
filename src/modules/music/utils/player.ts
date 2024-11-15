@@ -114,7 +114,6 @@ export class musicplayer {
 	}
 
 	async getPlaylist(playlistId: string): Promise<musicFile[]> {
-		console.log(playlistId);
 		const url = `https://www.youtube.com/playlist?list=${playlistId}`;
 		const playlistData = await ytlist(url, 'url');
 		const data = [];
