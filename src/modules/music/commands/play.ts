@@ -19,7 +19,8 @@ export async function musicPlayCommand(interaction: ChatInputCommandInteraction)
 	}
 
 	const reply = await interaction.deferReply({ ephemeral: true });
-	const entry = await player.getVideoEntry(url);
+	let entry = await player.getVideoEntry(url);
 	const playing = player.play(entry);
+	if(Array.isArray(entry)) entry = entry[0];
 	reply.edit(`${playing ? "Spiele" : "Zur Warteliste hinzugefügt"}: ${entry.name}`);
 }

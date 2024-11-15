@@ -4,6 +4,7 @@ import * as ytldl from "@distube/ytdl-core";
 import { EmbedBuilder, VoiceChannel } from "discord.js";
 import * as fs from "fs";
 import dbManager from "../../../manager/dbManager";
+import * as ytlist from 'youtube-playlist';
 
 if (!fs.existsSync('./music/')) fs.mkdirSync('./music/');
 
@@ -36,7 +37,18 @@ export class musicplayer {
 		});
 	}
 
-	play(file: musicFile, queuedSong:boolean = false):boolean {
+	play(file: musicFile|musicFile[], queuedSong:boolean = false):boolean {
+		if (Array.isArray(file)) {
+			if(this.playing && !queuedSong) {
+				this.queue.push(...file);
+
+				return false;
+			}
+
+			this.queue.push(...file);
+			file = this.queue.shift();
+		}
+
 		if(this.playing && !queuedSong) {
 			this.queue.push(file);
 
@@ -54,7 +66,12 @@ export class musicplayer {
 		return true;
 	}
 
-	async getVideoEntry(url: string): Promise<musicFile> {
+	async getVideoEntry(url: string): Promise<musicFile|musicFile[]> {
+		const playlist =  /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+		const isPlaylist = playlist.exec(url);
+		if(isPlaylist) return this.getPlaylist(isPlaylist[2]);
+
+
 		const regEx = /(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/user\/\S+|\/ytscreeningroom\?v=|\/sandalsResorts#\w\/\w\/.*\/))([^\/&]{10,12})/;
 		const youtubeId = regEx.exec(url);
 
@@ -94,6 +111,21 @@ export class musicplayer {
 		});
 
 		return file;
+	}
+
+	async getPlaylist(playlistId: string): Promise<musicFile[]> {
+		console.log(playlistId);
+		const url = `https://www.youtube.com/playlist?list=${playlistId}`;
+		const playlistData = await ytlist(url, 'url');
+		const data = [];
+		console.log("test", JSON.stringify(playlistData))
+		for(const song of playlistData.data.playlist) {
+			console.log(song)
+			const file = await this.getVideoEntry(song);
+			data.push(file);
+		}
+
+		return data;
 	}
 
 	public pause() {
