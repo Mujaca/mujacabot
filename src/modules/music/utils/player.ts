@@ -4,9 +4,13 @@ import * as ytldl from "@distube/ytdl-core";
 import { EmbedBuilder, VoiceChannel } from "discord.js";
 import * as fs from "fs";
 import dbManager from "../../../manager/dbManager";
-import * as ytlist from 'youtube-playlist';
 
+let agent:ytldl.Agent|null;
 if (!fs.existsSync('./music/')) fs.mkdirSync('./music/');
+if (fs.existsSync('./music/cookies.json')) {
+	const cookies = JSON.parse(fs.readFileSync('./music/cookies.json', 'utf-8'));
+	agent = ytldl.createAgent(cookies);
+}
 
 export class musicplayer {
 
@@ -92,8 +96,9 @@ export class musicplayer {
 			}
 		});
 
-		// @ts-ignore
-		const downloadTarget = ytldl(url, { filter: "audioonly" });
+		const options:ytldl.downloadOptions = { quality: "highestaudio", filter: "audioonly" };
+		if(agent) options.agent = agent;
+		const downloadTarget = ytldl(url, options);
 		//@ts-ignore
 		const stream = downloadTarget.pipe(fs.createWriteStream(`./music/${youtubeId[1]}.mp3`));
 		await new Promise((resolve, reject) => {
@@ -114,15 +119,13 @@ export class musicplayer {
 	}
 
 	async getPlaylist(playlistId: string): Promise<musicFile[]> {
-		const url = `https://www.youtube.com/playlist?list=${playlistId}`;
-		const playlistData = await ytlist(url, 'url');
 		const data = [];
-		console.log("test", JSON.stringify(playlistData))
-		for(const song of playlistData.data.playlist) {
+		/**
+		for(const song of playlistData.videos.items) {
 			console.log(song)
 			const file = await this.getVideoEntry(song);
 			data.push(file);
-		}
+		}**/
 
 		return data;
 	}
