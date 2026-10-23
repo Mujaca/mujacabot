@@ -101,7 +101,7 @@ export class musicplayer {
 		const downloadTarget = ytldl(url, options);
 		//@ts-ignore
 		const stream = downloadTarget.pipe(fs.createWriteStream(`./music/${youtubeId[1]}.mp3`));
-		await new Promise((resolve, reject) => {
+		await new Promise<void>((resolve, reject) => {
 			stream.on("finish", resolve);
 			stream.on("error", reject);
 		});
